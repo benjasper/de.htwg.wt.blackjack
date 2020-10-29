@@ -4,6 +4,7 @@ import akka.actor.ActorSystem
 import javax.inject._
 import play.api.mvc._
 import play.api.libs.ws._
+import play.api.libs.json.{JsValue, Json}
 
 import scala.concurrent.duration.Duration
 import scala.concurrent.{Await, ExecutionContextExecutor, Future}
@@ -39,7 +40,11 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents,
   def newGame(): Action[AnyContent] = Action.async {
     implicit request: Request[AnyContent] =>
       val request: WSRequest = ws.url("http://localhost:9001/game/start")
-      request.put("{\n\t\"playerId\": \"5ee8ef6b4e59a14766d20456\",\n\t\"betValue\": 100\n}").map {
+      val json: JsValue = Json.obj(
+        "playerId" -> "5f996dc0c655b6435178f41e",
+        "betValue" -> 100
+      )
+      request.put(json).map {
         json => Ok(views.html.index(json.body))
       }.recover {
         json => InternalServerError(views.html.index(json.getMessage))
@@ -49,7 +54,10 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents,
   def gameHit(): Action[AnyContent] = Action.async {
     implicit request: Request[AnyContent] =>
       val request: WSRequest = ws.url("http://localhost:9001/game/hit")
-      request.put("").map {
+      val json: JsValue = Json.obj(
+        "playerId" -> "5f996dc0c655b6435178f41e"
+      )
+      request.put(json).map {
         json => Ok(views.html.index(json.body))
       }.recover {
         json => InternalServerError(views.html.index(json.getMessage))
@@ -59,7 +67,10 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents,
   def gameStand(): Action[AnyContent] = Action.async {
     implicit request: Request[AnyContent] =>
       val request: WSRequest = ws.url("http://localhost:9001/game/stand")
-      request.put("{\n\t\"playerId\": \"5ee8ef6b4e59a14766d20456\"\n}").map {
+      val json: JsValue = Json.obj(
+        "playerId" -> "5f996dc0c655b6435178f41e"
+      )
+      request.put(json).map {
         json => Ok(views.html.index(json.body))
       }.recover {
         json => InternalServerError(views.html.index(json.getMessage))
