@@ -37,15 +37,9 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents,
       }
   }
 
-  def blackjack(): Action[AnyContent] = Action.async {
+  def blackjack(): Action[AnyContent] = Action {
     implicit request: Request[AnyContent] =>
-      val request: WSRequest = ws.url("http://localhost:9002/player/5fa3ba4f800df34886c43d15")
-      request.withRequestTimeout(Duration("3s"))
-      request.get().map {
-        json => Ok(views.html.blackjack(json.body))
-      }.recover {
-        json => InternalServerError(views.html.index(json.getMessage))
-      }
+        Ok(views.html.blackjack())
   }
 
   def newGame(): Action[AnyContent] = Action.async {
