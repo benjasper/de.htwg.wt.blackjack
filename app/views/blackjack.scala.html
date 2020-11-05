@@ -1,8 +1,9 @@
 @main("Welcome to Play") {
     <div>
-        <h1>
-        The Rules of Blackjack
-            <img src=" /assets/images/playingcards.png" class="img-fluid">
+        <h1 style="text-align: center">
+            <img src=" /assets/images/playingcards.png" class="img-fluid" width="200" height="150">
+            The Rules of Blackjack
+            <img src=" /assets/images/playingcards.png" class="img-fluid" width="200" height="150">
         </h1>
     </div>
     <div>
@@ -32,14 +33,16 @@
                 <li>Diamonds</li>
             </span>
         </ul>
-        <a>Blackjack is played with 1 to 9 decks of 52 cards each. The values of the cards correspond to their numerical value from 2-10.
-            All face cards (Jack, Queen, King) count 10 and the Ace either 1 or 11, as the holders desires</a>
+        <p>
+            Blackjack is played with 1 to 9 decks of 52 cards each. The values of the cards correspond to their numerical value from 2-10.
+            All face cards (Jack, Queen, King) count 10 and the Ace either 1 or 11, as the holders desires.
+        </p>
     </div>
     <div>
         <h2>
             The Rules
         </h2>
-        <a>
+        <p>
             The goal of blackjack is to beat the dealer's hand without going over 21.
             Each player starts with two cards, one of the dealer's cards is hidden until the end.
             To 'Hit' is to ask for another card. To 'Stand' is to hold your total and end your turn.
@@ -47,7 +50,8 @@
             If you are dealt 21 from the start (Ace & 10), you got a blackjack.
             Blackjack usually means you win double the amount of your bet.
             Dealer will hit until his cards total 17 or higher.
-        </a>
+        </p>
     </div>
+    <br>
     <a class="btn" href="@controllers.routes.HomeController.index()">Start Game</a>
 }
