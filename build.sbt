@@ -3,7 +3,9 @@ organization := "de.htwg"
 
 version := "1.0-SNAPSHOT"
 
-lazy val root = (project in file(".")).enablePlugins(PlayScala)
+javaOptions ++= Seq("", "-Djdk.lang.Process.allowAmbiguousCommands=true")
+
+lazy val root = (project in file(".")).enablePlugins(PlayScala).enablePlugins(SbtWeb)
 
 scalaVersion := "2.13.3"
 
