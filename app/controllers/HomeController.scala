@@ -31,7 +31,7 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents,
       val request: WSRequest = ws.url("http://localhost:9002/player/5f996dc0c655b6435178f41e")
       request.withRequestTimeout(Duration("3s"))
       request.get().map {
-        json => Ok(views.html.index(json.body))
+        json => Ok(views.html.blackjack(json.body))
       }.recover {
         json => InternalServerError(views.html.index(json.getMessage))
       }
@@ -45,7 +45,7 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents,
         "betValue" -> 100
       )
       request.put(json).map {
-        json => Ok(views.html.index(json.body))
+        json => Ok(views.html.blackjack(json.body))
       }.recover {
         json => InternalServerError(views.html.index(json.getMessage))
       }
@@ -58,7 +58,7 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents,
         "playerId" -> "5f996dc0c655b6435178f41e"
       )
       request.put(json).map {
-        json => Ok(views.html.index(json.body))
+        json => Ok(views.html.blackjack(json.body))
       }.recover {
         json => InternalServerError(views.html.index(json.getMessage))
       }
@@ -71,7 +71,7 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents,
         "playerId" -> "5f996dc0c655b6435178f41e"
       )
       request.put(json).map {
-        json => Ok(views.html.index(json.body))
+        json => Ok(views.html.blackjack(json.body))
       }.recover {
         json => InternalServerError(views.html.index(json.getMessage))
       }
