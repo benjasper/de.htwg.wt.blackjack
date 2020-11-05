@@ -5,6 +5,7 @@ version := "1.0-SNAPSHOT"
 
 javaOptions ++= Seq("", "-Djdk.lang.Process.allowAmbiguousCommands=true")
 
+includeFilter in (Assets, LessKeys.less) := "*.less"
 lazy val root = (project in file(".")).enablePlugins(PlayScala).enablePlugins(SbtWeb)
 
 scalaVersion := "2.13.3"
