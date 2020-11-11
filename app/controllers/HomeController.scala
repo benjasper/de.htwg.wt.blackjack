@@ -28,7 +28,7 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents,
    */
   def index(): Action[AnyContent] = Action.async {
     implicit request: Request[AnyContent] =>
-      val request: WSRequest = ws.url("http://localhost:9002/player/5f996dc0c655b6435178f41e")
+      val request: WSRequest = ws.url("http://localhost:9002/player/5fa3ba4f800df34886c43d15")
       request.withRequestTimeout(Duration("3s"))
       request.get().map {
         json => Ok(views.html.index(json.body))
@@ -37,11 +37,16 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents,
       }
   }
 
+  def blackjack(): Action[AnyContent] = Action {
+    implicit request: Request[AnyContent] =>
+        Ok(views.html.blackjack())
+  }
+
   def newGame(): Action[AnyContent] = Action.async {
     implicit request: Request[AnyContent] =>
       val request: WSRequest = ws.url("http://localhost:9001/game/start")
       val json: JsValue = Json.obj(
-        "playerId" -> "5f996dc0c655b6435178f41e",
+        "playerId" -> "5fa3ba4f800df34886c43d15",
         "betValue" -> 100
       )
       request.put(json).map {
@@ -55,7 +60,7 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents,
     implicit request: Request[AnyContent] =>
       val request: WSRequest = ws.url("http://localhost:9001/game/hit")
       val json: JsValue = Json.obj(
-        "playerId" -> "5f996dc0c655b6435178f41e"
+        "playerId" -> "5fa3ba4f800df34886c43d15"
       )
       request.put(json).map {
         json => Ok(views.html.index(json.body))
@@ -68,7 +73,7 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents,
     implicit request: Request[AnyContent] =>
       val request: WSRequest = ws.url("http://localhost:9001/game/stand")
       val json: JsValue = Json.obj(
-        "playerId" -> "5f996dc0c655b6435178f41e"
+        "playerId" -> "5fa3ba4f800df34886c43d15"
       )
       request.put(json).map {
         json => Ok(views.html.index(json.body))

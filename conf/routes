@@ -4,7 +4,8 @@
 # ~~~~
 
 # An example controller showing a sample home page
-GET        /                    controllers.HomeController.index
+GET        /                    controllers.HomeController.blackjack()
+GET        /index               controllers.HomeController.index()
 GET        /game/new            controllers.HomeController.newGame()
 GET        /game/hit            controllers.HomeController.gameHit()
 GET        /game/stand          controllers.HomeController.gameStand()
