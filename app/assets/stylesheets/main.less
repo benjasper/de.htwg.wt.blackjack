@@ -4,9 +4,13 @@ body {
   background-color: @playing-table-green;
 }
 
-html, body {
+html, body, ul, li {
   margin: 0;
   padding: 0;
+}
+
+ul, li {
+  list-style: none;
 }
 
 h1 {
@@ -19,27 +23,6 @@ p, h2, h3, h4, li {
   font-family: Helvetica, serif;
 }
 
-div {
-
-  body {
-    background-color: #cccccc;
-  }
-
-  html {
-    margin: 0;
-    padding: 0;
-  }
-
-  h1 {
-    font-family: Vivaldi, serif;
-    font-weight: bold;
-  }
-
-  p, h2, h3, h4, li {
-    padding: 10px;
-    font-family: Helvetica, serif;
-  }
-}
 .menu-buttons {
   background-color: black;
   border: none;
@@ -85,10 +68,12 @@ div {
       flex-flow: row;
       justify-content: space-evenly;
       height: 100%;
+
       a {
         cursor: pointer;
         margin: auto 2em;
-        padding: 2em;
+        font-size: 1.4em;
+        padding: 1em;
         border: 2px solid white;
         border-radius: 25px;
         color: white;
@@ -99,6 +84,7 @@ div {
     }
 
     .stats {
+      font-size: 1.4em;
       text-align: center;
       color: white;
       margin: auto 0;
@@ -125,10 +111,19 @@ div {
     flex-flow: row;
     justify-content: space-evenly;
     bottom: 0;
+    padding-top: 20vw;
 
     .player-stack {
       width: 8em;
-      margin-top: 45vh;
+
+      .info {
+        text-align: center;
+
+        span {
+          font-size: 1.2em;
+          color: white;
+        }
+      }
     }
   }
 }
