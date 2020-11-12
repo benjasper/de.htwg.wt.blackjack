@@ -11,11 +11,11 @@ h1 {
   font-family: Vivaldi;
   font-weight: bold;
 }
-p, h2, h3, h4, li{
+p, h2, h3, h4, li {
   font-family: Helvetica;
-
+}
 #top, #bottom, #left, #right {
-  border-image: url("../public/images/card.png") repeat;
+  border-image: url("../images/card.png") repeat;
 }
 #left, #right {
   top: 0; bottom: 0;
@@ -67,10 +67,22 @@ div {
   }
 
   .card {
-    width: 2rem;
-    height: 4rem;
-    background-image: url("../images/cards/blue_back.png");
-    background-size: contain;
-    background-repeat: no-repeat;
+    width: 8em;
+    object-fit: contain;
+    float: right;
+  }
+
+  .section-dealer {
+    position: absolute;
+    width: 30vw;
+    margin: 2em 35vw 0 35vw;
+    display: flex;
+    flex-direction: row;
+    flex-flow: row;
+    justify-content: space-evenly;
+
+    .hand-dealer{
+      margin-top: 16em;
+    }
   }
 }
