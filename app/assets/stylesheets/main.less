@@ -49,6 +49,12 @@ div {
   text-decoration: none;
   display: inline-block;
   font-size: 25px;
+  cursor: pointer;
+}
+
+.card {
+  width: 2em;
+  object-fit: contain;
 }
 
 .playing-table {
@@ -56,12 +62,23 @@ div {
   height: 100vh;
   background-color: @playing-table-green;
 
+  .card {
+    width: 8em;
+  }
+
   .control-bar {
     height: 10vh;
     width: 100vw;
     position: absolute;
     bottom: 0;
     background-color: #51290f;
+    display: flex;
+    flex-flow: row;
+    justify-content: space-evenly;
+
+    .menu {
+      margin: auto 0;
+    }
 
     .actions {
       display: flex;
@@ -69,17 +86,23 @@ div {
       justify-content: space-evenly;
       height: 100%;
       a {
+        cursor: pointer;
+        margin: auto 2em;
+        padding: 2em;
+        border: 2px solid white;
+        border-radius: 25px;
         color: white;
         text-decoration: none;
         text-align: center;
         display: block;
       }
     }
-  }
 
-  .card {
-    width: 8em;
-    object-fit: contain;
+    .stats {
+      text-align: center;
+      color: white;
+      margin: auto 0;
+    }
   }
 
   section.dealer {
