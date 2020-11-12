@@ -2,7 +2,7 @@
 @import "./config.less";
 
 body {
-  background-color: #cccccc;
+  background-color: @playing-table-green;
 }
 html,body {
   margin: 0;
@@ -11,6 +11,7 @@ html,body {
 h1 {
   font-family: Vivaldi;
   font-weight: bold;
+  font-size: 75px;
 }
 p, h2, h3, h4, li {
   font-family: Helvetica;
@@ -36,6 +37,16 @@ div {
     padding: 10px;
     font-family: Helvetica;
   }
+}
+.menu-buttons {
+  background-color: black;
+  border: none;
+  color: white;
+  padding: 15px 32px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 25px;
 }
 
 .playing-table {
