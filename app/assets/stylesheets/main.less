@@ -1,14 +1,39 @@
-body {
-  background-color: #cccccc;
+
+#top, #bottom, #left, #right {
+  border-image: url("../public/images/card.png") repeat;
 }
-html {
-  margin: 0;
-  padding: 0;
+#left, #right {
+  top: 0; bottom: 0;
+  width: 15px;
 }
-h1 {
-  font-family: Vivaldi;
-  font-weight: bold;
+#left { left: 0; }
+#right { right: 0; }
+
+#top, #bottom {
+  left: 0; right: 0;
+  height: 15px;
 }
-p, h2, h3, h4, li{
-  font-family: Helvetica;
+#top { top: 0; }
+#bottom { bottom: 0; }
+
+div {
+
+  body {
+    background-color: #cccccc;
+  }
+
+  html {
+    margin: 0;
+    padding: 0;
+  }
+
+  h1 {
+    font-family: Vivaldi;
+    font-weight: bold;
+  }
+
+  p, h2, h3, h4, li {
+    padding: 10px;
+    font-family: Helvetica;
+  }
 }
