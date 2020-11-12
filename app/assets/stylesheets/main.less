@@ -1,19 +1,21 @@
-
 @import "./config.less";
 
 body {
   background-color: #cccccc;
 }
-html,body {
+
+html, body {
   margin: 0;
   padding: 0;
 }
+
 h1 {
-  font-family: Vivaldi;
+  font-family: Vivaldi, serif;
   font-weight: bold;
 }
+
 p, h2, h3, h4, li {
-  font-family: Helvetica;
+  font-family: Helvetica, serif;
 }
 
 div {
@@ -28,13 +30,13 @@ div {
   }
 
   h1 {
-    font-family: Vivaldi;
+    font-family: Vivaldi, serif;
     font-weight: bold;
   }
 
   p, h2, h3, h4, li {
     padding: 10px;
-    font-family: Helvetica;
+    font-family: Helvetica, serif;
   }
 }
 
@@ -49,25 +51,50 @@ div {
     position: absolute;
     bottom: 0;
     background-color: #51290f;
+
+    .actions {
+      display: flex;
+      flex-flow: row;
+      justify-content: space-evenly;
+      height: 100%;
+      a {
+        color: white;
+        text-decoration: none;
+        text-align: center;
+        display: block;
+      }
+    }
   }
 
   .card {
     width: 8em;
     object-fit: contain;
-    float: right;
   }
 
-  .section-dealer {
-    position: absolute;
+  section.dealer {
     width: 30vw;
-    margin: 2em 35vw 0 35vw;
+    padding: 2em 35vw 0 35vw;
     display: flex;
     flex-direction: row;
     flex-flow: row;
     justify-content: space-evenly;
 
-    .hand-dealer{
-      margin-top: 16em;
+    .hand-dealer {
+
+    }
+  }
+
+  section.players {
+    width: 100vw;
+    display: flex;
+    flex-direction: row;
+    flex-flow: row;
+    justify-content: space-evenly;
+    bottom: 0;
+
+    .player-stack {
+      width: 8em;
+      margin-top: 45vh;
     }
   }
 }
