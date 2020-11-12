@@ -1,0 +1,14 @@
+@main("Game Menu") {
+    <div id="heading">
+        <h1 style="text-align: center">
+            <img src=" /assets/images/playingcards.png" class="img-fluid" width="200" height="150">
+            Game Menu
+            <img src=" /assets/images/playingcards.png" class="img-fluid" width="200" height="150">
+        </h1>
+    </div>
+    <div id="menu-buttons">
+        <a class="btn" href="@controllers.routes.HomeController.rules()">Rules</a>
+        <br>
+        <a class="btn" href="@controllers.routes.HomeController.index()">Start Game</a>
+    </div>
+}
