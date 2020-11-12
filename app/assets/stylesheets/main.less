@@ -1,3 +1,18 @@
+@import "./config.less";
+
+body {
+  background-color: #cccccc;
+}
+html,body {
+  margin: 0;
+  padding: 0;
+}
+h1 {
+  font-family: Vivaldi;
+  font-weight: bold;
+}
+p, h2, h3, h4, li{
+  font-family: Helvetica;
 
 #top, #bottom, #left, #right {
   border-image: url("../public/images/card.png") repeat;
@@ -35,5 +50,27 @@ div {
   p, h2, h3, h4, li {
     padding: 10px;
     font-family: Helvetica;
+  }
+}
+
+.playing-table {
+  width: 100vw;
+  height: 100vh;
+  background-color: @playing-table-green;
+
+  .control-bar {
+    height: 10vh;
+    width: 100vw;
+    position: absolute;
+    bottom: 0;
+    background-color: #51290f;
+  }
+
+  .card {
+    width: 2rem;
+    height: 4rem;
+    background-image: url("../images/cards/blue_back.png");
+    background-size: contain;
+    background-repeat: no-repeat;
   }
 }
