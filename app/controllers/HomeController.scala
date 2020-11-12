@@ -48,6 +48,16 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents,
       }
   }
 
+  def rules(): Action[AnyContent] = Action {
+    implicit request: Request[AnyContent] =>
+      Ok(views.html.blackjack())
+  }
+
+  def menu(): Action[AnyContent] = Action {
+    implicit request: Request[AnyContent] =>
+      Ok(views.html.menu())
+  }
+
   def blackjack(): Action[AnyContent] = Action {
     implicit request: Request[AnyContent] =>
         Ok(views.html.blackjack())
