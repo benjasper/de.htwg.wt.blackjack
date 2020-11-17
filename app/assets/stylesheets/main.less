@@ -1,0 +1,133 @@
+@import "./config.less";
+
+body {
+  background-color: @playing-table-green;
+  font-family: 'Source Sans Pro', sans-serif;
+}
+
+html, body, ul, li {
+  margin: 0;
+  padding: 0;
+}
+
+ul, li {
+  list-style: none;
+}
+
+h1 {
+  font-family: @heading-font;
+  font-weight: bold;
+  font-size: 75px;
+  margin: 0;
+  padding-top: 1em;
+}
+
+p, h2, h3, h4, li {
+  font-family: @text-font;
+}
+
+.menu-buttons {
+  background-color: black;
+  border: none;
+  color: white;
+  padding: 15px 32px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 25px;
+  font-family: @text-font;
+  cursor: pointer;
+}
+
+.card {
+  width: 2em;
+  object-fit: contain;
+}
+
+.playing-table {
+  width: 100vw;
+  height: 100vh;
+  background-color: @playing-table-green;
+
+  .card {
+    width: 8em;
+  }
+
+  .control-bar {
+    height: 10vh;
+    width: 100vw;
+    position: absolute;
+    bottom: 0;
+    background-color: #51290f;
+    display: flex;
+    flex-flow: row;
+    justify-content: space-evenly;
+
+    .menu {
+      margin: auto 0;
+    }
+
+    .actions {
+      display: flex;
+      flex-flow: row;
+      justify-content: space-evenly;
+      height: 100%;
+
+      a {
+        cursor: pointer;
+        margin: auto 2em;
+        font-size: 1.4em;
+        padding: 1em;
+        border: 2px solid white;
+        border-radius: 25px;
+        color: white;
+        text-decoration: none;
+        text-align: center;
+        display: block;
+      }
+    }
+
+    .stats {
+      font-size: 1.4em;
+      text-align: center;
+      color: white;
+      margin: auto 0;
+    }
+  }
+
+  section.dealer {
+    width: 30vw;
+    padding: 2em 35vw 0 35vw;
+    display: flex;
+    flex-direction: row;
+    flex-flow: row;
+    justify-content: space-evenly;
+
+    .hand-dealer {
+
+    }
+  }
+
+  section.players {
+    width: 100vw;
+    display: flex;
+    flex-direction: row;
+    flex-flow: row;
+    justify-content: space-evenly;
+    bottom: 0;
+    padding-top: 20vw;
+
+    .player-stack {
+      width: 8em;
+
+      .info {
+        text-align: center;
+
+        span {
+          font-size: 1.2em;
+          color: white;
+        }
+      }
+    }
+  }
+}

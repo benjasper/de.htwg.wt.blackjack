@@ -1,0 +1,87 @@
+@(response: String)
+
+@main("Playing Field") {
+    <div class="playing-table">
+        <section class="dealer">
+            <div class="hand-dealer">
+                <img class="card" src="/assets/images/cards/5D.png" alt="Card">
+                <img class="card" src="/assets/images/cards/AD.png" alt="Card">
+                <img class="card" src="/assets/images/cards/7H.png" alt="Card">
+            </div>
+            <div class="stack">
+                <img class="card" src="/assets/images/cards/blue_back.png" alt="Card">
+            </div>
+        </section>
+
+        <section class="players">
+            <div class="player-stack player-1">
+                <ul class="cards">
+                    <li>
+                        <img class="card" src="/assets/images/cards/5D.png" alt="Card">
+                    </li>
+                </ul>
+                <div class="info">
+                    <span>Cards Value: 5</span>
+                    <span>Player 1</span>
+                </div>
+            </div>
+            <div class="player-stack player-2">
+                <ul class="cards">
+                    <li>
+                        <img class="card" src="/assets/images/cards/5D.png" alt="Card">
+                    </li>
+                </ul>
+                <div class="info">
+                    <span>Cards Value: 5</span>
+                    <span>Player 2</span>
+                </div>
+            </div>
+            <div class="player-stack player-3">
+                <ul class="cards">
+                    <li>
+                        <img class="card" src="/assets/images/cards/5D.png" alt="Card">
+                    </li>
+                </ul>
+                <div class="info">
+                    <span>Cards Value: 5</span>
+                    <span>Player 3</span>
+                </div>
+            </div>
+            <div class="player-stack player-4">
+                <ul class="cards">
+                    <li>
+                        <img class="card" src="/assets/images/cards/5D.png" alt="Card">
+                    </li>
+                </ul>
+                <div class="info">
+                    <span>Cards Value: 5</span>
+                    <span>Player 4</span>
+                </div>
+            </div>
+            <div class="player-stack player-5">
+                <ul class="cards">
+                    <li>
+                        <img class="card" src="/assets/images/cards/5D.png" alt="Card">
+                    </li>
+                </ul>
+                <div class="info">
+                    <span>Cards Value: 5</span>
+                    <span>Player 5</span>
+                </div>
+            </div>
+        </section>
+
+        <div class="control-bar">
+            <div class="menu">
+                <a class="menu-buttons" href="@controllers.routes.HomeController.menu()">Back</a>
+            </div>
+            <div class="actions">
+                <a>HIT</a>
+                <a>STAND</a>
+            </div>
+            <div class="stats">
+                <span>Balance: 1000$</span>
+            </div>
+        </div>
+    </div>
+}

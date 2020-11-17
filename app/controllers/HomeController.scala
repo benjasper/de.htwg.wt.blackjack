@@ -37,6 +37,27 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents,
       }
   }
 
+  def playingfield(): Action[AnyContent] = Action.async {
+    implicit request: Request[AnyContent] =>
+      val request: WSRequest = ws.url("http://localhost:9002/player/5fa3ba4f800df34886c43d15")
+      request.withRequestTimeout(Duration("3s"))
+      request.get().map {
+        json => Ok(views.html.playingfield(json.body))
+      }.recover {
+        json => InternalServerError(views.html.playingfield(json.getMessage))
+      }
+  }
+
+  def rules(): Action[AnyContent] = Action {
+    implicit request: Request[AnyContent] =>
+      Ok(views.html.blackjack())
+  }
+
+  def menu(): Action[AnyContent] = Action {
+    implicit request: Request[AnyContent] =>
+      Ok(views.html.menu())
+  }
+
   def blackjack(): Action[AnyContent] = Action {
     implicit request: Request[AnyContent] =>
         Ok(views.html.blackjack())

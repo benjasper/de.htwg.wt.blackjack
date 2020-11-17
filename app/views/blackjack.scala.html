@@ -1,50 +1,50 @@
-@main("Welcome to Play") {
-    <div>
+@main("Rules of Blackjack") {
+    <div class="rules">
         <h1 style="text-align: center">
-            <img src=" /assets/images/playingcards.png" class="img-fluid" width="200" height="150">
+            <img src=" /assets/images/cards/red_back.png" class="card" height="150" width="75">
             The Rules of Blackjack
-            <img src=" /assets/images/playingcards.png" class="img-fluid" width="200" height="150">
+            <img src=" /assets/images/cards/red_back.png" class="card" height="150" width="75">
         </h1>
     </div>
     <div>
-        <h2>
+        <h2 style="text-align: center">
             Blackjack History
         </h2>
-        <p style="color: blue">
-            The origins of Blackjack is still under debate, but researchers agree that Blackjack probably originated in the French casinos around 1700.
-            The French cards were called "Vingt-et-Un," which translates to "Twenty-one."
-            These cards are probably derived from card games Chemin de Fer, which were popular at that time.
+        <p style="text-align: center">
+            The origins of Blackjack is still under debate, but researchers agree that Blackjack probably originated in the French casinos around 1700. <br>
+            The French cards were called "Vingt-et-Un," which translates to "Twenty-one."<br>
+            These cards are probably derived from card games Chemin de Fer, which were popular at that time.<br>
         </p>
     </div>
     <div>
-        <h2>
+        <h2 style="text-align: center">
             Cards
         </h2>
-        <h3>
+        @*<h3 style="text-align: center">
             Faces:
         </h3>
-        <ul type="disk">
+        <ul type="disk" style="text-align: center; align-self: center">
             <li style="color: black">Spade</li>
             <li style="color: black">Clubs</li>
             <li style="color: red">Heart</li>
             <li style="color: red">Diamonds</li>
-        </ul>
-        <p>
+        </ul>*@
+        <p style="text-align: center">
             Blackjack is played with 1 to 9 decks of 52 cards each. The values of the cards correspond to their numerical value from 2-10.
             All face cards (Jack, Queen, King) count 10 and the Ace either 1 or 11, as the holders desires.
         </p>
     </div>
     <div>
-        <h2>
+        <h2 style="text-align: center">
             The Rules
         </h2>
-        <p>
+        <p style="text-align: center">
             The goal of blackjack is to beat the dealer's hand without going over 21.
             Each player starts with two cards, one of the dealer's cards is hidden until the end.
             To 'Hit' is to ask for another card. To 'Stand' is to hold your total and end your turn.
         </p>
 
-        <p>
+        <p style="text-align: center">
             If you go over 21 you bust, and the dealer wins regardless of the dealer's hand.
             If you are dealt 21 from the start (Ace & 10), you got a blackjack.
             Blackjack usually means you win double the amount of your bet.
@@ -52,5 +52,8 @@
         </p>
     </div>
     <br>
-    <a class="btn" href="@controllers.routes.HomeController.index()">Start Game</a>
+    <div style="text-align: center">
+    <a style="text-align: center; align-items: center" class="menu-buttons" href="@controllers.routes.HomeController.menu()">Back</a>
+    </div>
+    <br>
 }
