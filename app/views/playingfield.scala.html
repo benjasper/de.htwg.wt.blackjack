@@ -3,14 +3,16 @@
 @main("Playing Field") {
     <div class="playing-table">
         <section class="dealer">
-            <div class="hand-dealer">
+            <div class="col"></div>
+            <div class="col hand-dealer">
                 <img class="card" src="/assets/images/cards/5D.png" alt="Card">
                 <img class="card" src="/assets/images/cards/AD.png" alt="Card">
                 <img class="card" src="/assets/images/cards/7H.png" alt="Card">
             </div>
-            <div class="stack">
+            <div class="col stack">
                 <img class="card" src="/assets/images/cards/blue_back.png" alt="Card">
             </div>
+
         </section>
 
         <section class="players">
@@ -70,18 +72,17 @@
                 </div>
             </div>
         </section>
-
-        <div class="control-bar">
-            <div class="menu">
-                <a class="menu-buttons" href="@controllers.routes.HomeController.menu()">Back</a>
-            </div>
-            <div class="actions">
-                <a>HIT</a>
-                <a>STAND</a>
-            </div>
-            <div class="stats">
-                <span>Balance: 1000$</span>
-            </div>
+    </div>
+    <div class="control-bar">
+        <div class="menu">
+            <a class="btn btn-light menu-buttons" href="@controllers.routes.HomeController.menu()">Back</a>
+        </div>
+        <div class="actions">
+            <a class="btn">HIT</a>
+            <a class="btn">STAND</a>
+        </div>
+        <div class="stats">
+            <span>Balance: 1000$</span>
         </div>
     </div>
 }

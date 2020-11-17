@@ -46,65 +46,29 @@ p, h2, h3, h4, li {
 
 .playing-table {
   width: 100vw;
-  height: 100vh;
+  height: 90vh;
   background-color: @playing-table-green;
 
   .card {
     width: 8em;
-  }
 
-  .control-bar {
-    height: 10vh;
-    width: 100vw;
-    position: absolute;
-    bottom: 0;
-    background-color: #51290f;
-    display: flex;
-    flex-flow: row;
-    justify-content: space-evenly;
-
-    .menu {
-      margin: auto 0;
-    }
-
-    .actions {
-      display: flex;
-      flex-flow: row;
-      justify-content: space-evenly;
-      height: 100%;
-
-      a {
-        cursor: pointer;
-        margin: auto 2em;
-        font-size: 1.4em;
-        padding: 1em;
-        border: 2px solid white;
-        border-radius: 25px;
-        color: white;
-        text-decoration: none;
-        text-align: center;
-        display: block;
-      }
-    }
-
-    .stats {
-      font-size: 1.4em;
-      text-align: center;
-      color: white;
-      margin: auto 0;
+    @media only screen and (max-width: 600px) {
+      width: 4em;
     }
   }
 
   section.dealer {
-    width: 30vw;
-    padding: 2em 35vw 0 35vw;
     display: flex;
     flex-direction: row;
     flex-flow: row;
-    justify-content: space-evenly;
+    justify-content: center;
+    padding: 2em 10vw 0 10vw;
 
     .hand-dealer {
-
+      justify-content: center;
+      display: flex;
+      flex-direction: row;
+      flex-flow: row;
     }
   }
 
@@ -129,5 +93,47 @@ p, h2, h3, h4, li {
         }
       }
     }
+  }
+}
+
+.control-bar {
+  height: 10vh;
+  width: 100vw;
+  position: relative;
+  background-color: #51290f;
+  display: flex;
+  flex-flow: row;
+  flex-wrap: wrap;
+  justify-content: space-evenly;
+
+  .menu {
+    margin: auto 0;
+  }
+
+  .actions {
+    display: flex;
+    flex-flow: row;
+    justify-content: space-evenly;
+    height: 100%;
+
+    a {
+      cursor: pointer;
+      margin: auto 2em;
+      font-size: 1.4em;
+      padding: 1em;
+      border: 2px solid white;
+      border-radius: 25px;
+      color: white;
+      text-decoration: none;
+      text-align: center;
+      display: block;
+    }
+  }
+
+  .stats {
+    font-size: 1.4em;
+    text-align: center;
+    color: white;
+    margin: auto 0;
   }
 }
