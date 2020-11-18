@@ -39,7 +39,7 @@ p, h2, h3, h4, li {
   cursor: pointer;
 }
 
-.card {
+.playing-card {
   width: 2em;
   object-fit: contain;
 }
@@ -49,11 +49,12 @@ p, h2, h3, h4, li {
   height: 90vh;
   background-color: @playing-table-green;
 
-  .card {
+  .playing-card {
     width: 8em;
 
     @media only screen and (max-width: 600px) {
-      width: 4em;
+      width: 5em;
+      margin: 0 auto;
     }
   }
 
