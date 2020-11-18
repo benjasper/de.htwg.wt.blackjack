@@ -73,16 +73,26 @@
             </div>
         </section>
     </div>
-    <div class="control-bar">
-        <div class="menu">
-            <a class="btn btn-light menu-buttons" href="@controllers.routes.HomeController.menu()">Back</a>
+
+    <div class="container-fluid control-bar">
+        <div class="row">
+            <div class="col-md-3 menu control-child">
+                <div class="row h-100">
+                    <a class="btn btn-secondary btn-lg m-auto" href="@controllers.routes.HomeController.menu()">Back</a>
+                </div>
+            </div>
+            <div class="col-md-6 actions control-child">
+                <div class="row h-100">
+                    <div class="m-auto">
+                        <a class="btn btn-light btn-lg">HIT</a>
+                        <a class="btn btn-light btn-lg">STAND</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 stats control-child">
+                <span>Balance: 1000$</span>
+            </div>
         </div>
-        <div class="actions">
-            <a class="btn">HIT</a>
-            <a class="btn">STAND</a>
-        </div>
-        <div class="stats">
-            <span>Balance: 1000$</span>
-        </div>
+
     </div>
 }

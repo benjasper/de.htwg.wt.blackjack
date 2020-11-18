@@ -46,14 +46,21 @@ p, h2, h3, h4, li {
 
 .playing-table {
   width: 100vw;
-  height: 90vh;
   background-color: @playing-table-green;
+  display: flex;
+  flex-flow: column;
+  height: 100vh;
 
   .playing-card {
     width: 8em;
 
-    @media only screen and (max-width: 600px) {
+    @media only screen and (max-width: 768px) {
       width: 5em;
+      margin: 0 auto;
+    }
+
+    @media only screen and (max-width: 480px) {
+      width: 3em;
       margin: 0 auto;
     }
   }
@@ -80,10 +87,14 @@ p, h2, h3, h4, li {
     flex-flow: row;
     justify-content: space-evenly;
     bottom: 0;
-    padding-top: 20vw;
+    margin: auto;
 
     .player-stack {
       width: 8em;
+
+      ul li {
+        display: flex;
+      }
 
       .info {
         text-align: center;
@@ -91,6 +102,9 @@ p, h2, h3, h4, li {
         span {
           font-size: 1.2em;
           color: white;
+          @media only screen and (max-width: 480px) {
+            font-size: 0.8em;
+          }
         }
       }
     }
@@ -98,41 +112,19 @@ p, h2, h3, h4, li {
 }
 
 .control-bar {
-  height: 10vh;
+  height: auto;
   width: 100vw;
-  position: relative;
+  position: absolute;
+  bottom: 0;
   background-color: #51290f;
-  display: flex;
-  flex-flow: row;
-  flex-wrap: wrap;
-  justify-content: space-evenly;
+  background-image: url("/assets/images/wood.jpg");
+  font-size: 1.4em;
 
-  .menu {
-    margin: auto 0;
-  }
-
-  .actions {
-    display: flex;
-    flex-flow: row;
-    justify-content: space-evenly;
-    height: 100%;
-
-    a {
-      cursor: pointer;
-      margin: auto 2em;
-      font-size: 1.4em;
-      padding: 1em;
-      border: 2px solid white;
-      border-radius: 25px;
-      color: white;
-      text-decoration: none;
-      text-align: center;
-      display: block;
-    }
+  .control-child {
+    padding: 1em;
   }
 
   .stats {
-    font-size: 1.4em;
     text-align: center;
     color: white;
     margin: auto 0;
