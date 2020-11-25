@@ -1,5 +1,5 @@
 gameController = new GameController();
 
 $("#newGame").click((event) => {
-    gameController.newGame()
+    gameController.newGame(event)
 })

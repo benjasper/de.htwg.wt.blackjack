@@ -5,20 +5,21 @@
             <section class="dealer">
                 <div class="col"></div>
                 <div id="hand-dealer" class="col hand-dealer">
-                    <img class="playing-card" src="/assets/images/cards/5D.png" alt="Card">
-                    <img class="playing-card" src="/assets/images/cards/AD.png" alt="Card">
-                    <img class="playing-card" src="/assets/images/cards/7H.png" alt="Card">
+                    <ul class="cards">
+                        <li class="placeholder">
+                            <img class="playing-card" src="/assets/images/cards/5D.png" alt="Card">
+                        </li>
+                    </ul>
                 </div>
                 <div class="col stack">
                     <img class="playing-card" src="/assets/images/cards/blue_back.png" alt="Card">
                 </div>
-
             </section>
 
             <section class="players">
-                <div class="player-stack player-1" >
+                <div id="player-stack-player-1" class="player-stack player-1" >
                     <ul class="cards">
-                        <li>
+                        <li class="placeholder">
                             <img class="playing-card" src="/assets/images/cards/5D.png" alt="Card">
                         </li>
                     </ul>
@@ -27,10 +28,10 @@
                         <span>Player 1</span>
                     </div>
                 </div>
-                <div class="player-stack player-2">
+                <div id="player-stack-player-2" class="player-stack player-2">
                     <ul class="cards">
-                        <li>
-                            <img class="playing-card" src="/assets/images/cards/5D.png" alt="Card">
+                        <li class="placeholder">
+                            <img class="playing-card" style="visibility: hidden" src="/assets/images/cards/5D.png" alt="Card">
                         </li>
                     </ul>
                     <div class="info">
@@ -38,9 +39,9 @@
                         <span>Player 2</span>
                     </div>
                 </div>
-                <div class="player-stack player-3">
+                <div id="player-stack-player-3" class="player-stack player-3">
                     <ul class="cards">
-                        <li>
+                        <li class="placeholder">
                             <img class="playing-card" src="/assets/images/cards/5D.png" alt="Card">
                         </li>
                     </ul>
@@ -74,17 +75,17 @@
         <div class="container-fluid control-bar">
             <div class="row">
                 <div class="col-md-3 menu control-child">
-                    <div class="row h-100">
-                        <a class="btn btn-secondary btn-lg m-auto" href="@controllers.routes.HomeController.menu()">
+                    <div class="row h-100 m-auto">
+                        <a class="btn btn-secondary btn-lg" href="@controllers.routes.HomeController.menu()">
                             Back</a>
+                        <input type="button" class="btn btn-light btn-lg ml-1" id="newGame" value="NEW GAME"/>
                     </div>
                 </div>
                 <div class="col-md-6 actions control-child">
                     <div class="row h-100">
                         <div class="m-auto">
-                            <a class="btn btn-light btn-lg" id="newGame">NEW GAME</a>
-                            <a class="btn btn-light btn-lg" id="hitGame">HIT</a>
-                            <a class="btn btn-light btn-lg" id="standGame">STAND</a>
+                            <input type="button" class="btn btn-light btn-lg" id="hitGame" value="HIT">
+                            <input type="button" class="btn btn-light btn-lg" id="standGame" value="STAND">
                         </div>
                     </div>
                 </div>
