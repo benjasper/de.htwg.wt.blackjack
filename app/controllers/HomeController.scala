@@ -66,22 +66,22 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents,
       )
 
       request.put(json).map {
-        json => Ok(views.html.playingfield(json.body))
+        json => Ok(Json.parse(json.body))
       }.recover {
-        json => InternalServerError(views.html.playingfield(json.getMessage))
+        json => InternalServerError(json.getMessage)
       }
   }
 
   def gameHit(): Action[AnyContent] = Action.async {
     implicit request: Request[AnyContent] =>
       val request: WSRequest = ws.url("http://localhost:9001/game/hit")
-      val json: JsValue = Json.obj(
+      val body: JsValue = Json.obj(
         "playerId" -> "5fa3ba4f800df34886c43d15"
       )
-      request.put(json).map {
-        json => Ok(views.html.playingfield(json.body))
+      request.put(body).map {
+        json => Ok(Json.parse(json.body))
       }.recover {
-        json => InternalServerError(views.html.playingfield(json.getMessage))
+        json => InternalServerError(json.getMessage)
       }
   }
 
