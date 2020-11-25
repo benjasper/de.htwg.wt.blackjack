@@ -26,15 +26,9 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents,
    * will be called when the application receives a `GET` request with
    * a path of `/`.
    */
-  def index(): Action[AnyContent] = Action.async {
+  def index(): Action[AnyContent] = Action {
     implicit request: Request[AnyContent] =>
-      val request: WSRequest = ws.url("http://localhost:9002/player/5fa3ba4f800df34886c43d15")
-      request.withRequestTimeout(Duration("3s"))
-      request.get().map {
-        json => Ok(views.html.index(json.body))
-      }.recover {
-        json => InternalServerError(views.html.index(json.getMessage))
-      }
+      Ok(views.html.menu())
   }
 
   def playingfield(): Action[AnyContent] = Action.async {
@@ -70,10 +64,11 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents,
         "playerId" -> "5fa3ba4f800df34886c43d15",
         "betValue" -> 100
       )
+
       request.put(json).map {
-        json => Ok(views.html.index(json.body))
+        json => Ok(views.html.playingfield(json.body))
       }.recover {
-        json => InternalServerError(views.html.index(json.getMessage))
+        json => InternalServerError(views.html.playingfield(json.getMessage))
       }
   }
 
@@ -84,9 +79,9 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents,
         "playerId" -> "5fa3ba4f800df34886c43d15"
       )
       request.put(json).map {
-        json => Ok(views.html.index(json.body))
+        json => Ok(views.html.playingfield(json.body))
       }.recover {
-        json => InternalServerError(views.html.index(json.getMessage))
+        json => InternalServerError(views.html.playingfield(json.getMessage))
       }
   }
 
@@ -97,9 +92,9 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents,
         "playerId" -> "5fa3ba4f800df34886c43d15"
       )
       request.put(json).map {
-        json => Ok(views.html.index(json.body))
+        json => Ok(views.html.playingfield(json.body))
       }.recover {
-        json => InternalServerError(views.html.index(json.getMessage))
+        json => InternalServerError(views.html.playingfield(json.getMessage))
       }
   }
 }

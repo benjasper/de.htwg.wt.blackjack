@@ -1,9 +1,0 @@
-@(response: String)
-
-@main("Blackjack the Browser Game") {
-  <h1>Blackjack</h1>
-  <p>@(response)</p>
-  <a class="btn" href="@controllers.routes.HomeController.newGame()">New game</a>
-  <a class="btn" href="@controllers.routes.HomeController.gameHit()">Hit</a>
-  <a class="btn" href="@controllers.routes.HomeController.gameStand()">Stand</a>
-}
