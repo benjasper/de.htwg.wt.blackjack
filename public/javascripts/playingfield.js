@@ -1,5 +1,14 @@
 gameController = new GameController();
 
-$("#newGame").click((event) => {
+$("#start-game").click((event) => {
+    $('#setBetModalBox').modal('hide');
+    gameController.newGame(event)
+})
+
+$("#hitGame").click((event) => {
+    gameController.hitGame(event)
+})
+
+$("#standGame").click((event) => {
     gameController.newGame(event)
 })
