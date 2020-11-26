@@ -7,6 +7,14 @@ class GameController {
     }
 
     newGame(event) {
+        this.cardController.clearDealerCards();
+        this.cardController.clearPlayerCards(0);
+        this.cardController.clearPlayerCards(1);
+        this.cardController.clearPlayerCards(2);
+
+        $('#hitGame').attr("disabled", false);
+        $('#standGame').attr("disabled", false);
+
         const request = $.ajax("/game/new", {
             method: "POST"
         });
@@ -51,15 +59,17 @@ class GameController {
             }
 
             self.cardController.addCardToPlayer(response.hitCard, 1)
+            console.log(response);
 
-            if (response.gamestates[response.gameStates.length - 1] === "WAITING_FOR_INPUT") {
+            if (response.gameStates[response.gameStates.length - 1].gameState === "WAITING_FOR_INPUT") {
                 $('#hitGame').attr("disabled", false);
                 $('#standGame').attr("disabled", false);
 
                 return;
             }
 
-            //TODO: reveal dealer cards
+            self.cardController.revealDealerCards(response.dealerCards);
+            $("#newGame").attr("disabled", false);
 
         });
     }
@@ -78,6 +88,8 @@ class GameController {
                 self.error(response.msg);
                 return;
             }
+            self.cardController.revealDealerCards(response.dealerCards);
+            $("#newGame").attr("disabled", false);
         });
     }
 

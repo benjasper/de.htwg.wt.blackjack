@@ -10,5 +10,5 @@ $("#hitGame").click((event) => {
 })
 
 $("#standGame").click((event) => {
-    gameController.newGame(event)
+    gameController.gameStand(event)
 })
