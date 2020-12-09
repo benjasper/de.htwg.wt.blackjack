@@ -1,6 +1,10 @@
 package controllers
 
 import akka.actor.ActorSystem
+import models.LoginData
+import play.api.data.Form
+import play.api.data.Forms.{mapping, nonEmptyText}
+
 import javax.inject._
 import play.api.mvc._
 import play.api.libs.ws._
@@ -15,9 +19,15 @@ import scala.concurrent.{Await, ExecutionContextExecutor, Future}
  */
 @Singleton
 class HomeController @Inject()(val controllerComponents: ControllerComponents,
-                               ws: WSClient) extends BaseController {
+                               ws: WSClient) extends BaseController with play.api.i18n.I18nSupport {
   implicit val actorSystem: ActorSystem = ActorSystem("apiExecutionContext")
   implicit val executionContext: ExecutionContextExecutor = actorSystem.dispatcher
+
+  val loginForm: Form[LoginData] = Form(
+    mapping(
+      "name" -> nonEmptyText,
+    )(LoginData.apply)(LoginData.unapply)
+  )
 
   /**
    * Create an Action to render an HTML page.
@@ -28,7 +38,32 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents,
    */
   def index(): Action[AnyContent] = Action {
     implicit request: Request[AnyContent] =>
-      Ok(views.html.menu())
+      Ok(views.html.menu("", ""))
+  }
+
+  def loginFormAction(): Action[AnyContent] = Action {
+    implicit request: Request[AnyContent] =>
+      Ok(views.html.login(loginForm))
+  }
+
+  val loginPost: Action[LoginData] = Action.async(parse.form(loginForm)) { implicit request =>
+    val userData = request.body
+    val newUser = models.LoginData(userData.username)
+    val r: WSRequest = ws.url("http://localhost:9002/player")
+    val body: JsValue = Json.obj(
+      "name" -> newUser.username
+    )
+    r.withRequestTimeout(Duration("3s"))
+    r.post(body).map {
+      json =>
+        Redirect(routes.HomeController.menu().absoluteURL(), Map[String, Seq[String]](
+          "playerId" -> Seq((json.json \ "id").get.as[String]),
+          "name" -> Seq((json.json \ "name").get.as[String])))
+    }.recover {
+      json =>
+        printf(json.toString)
+        Redirect(routes.HomeController.loginFormAction())
+    }
   }
 
   def playingfield(): Action[AnyContent] = Action.async {
@@ -49,12 +84,14 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents,
 
   def menu(): Action[AnyContent] = Action {
     implicit request: Request[AnyContent] =>
-      Ok(views.html.menu())
+      val playerId: String = request.getQueryString("playerId").getOrElse("")
+      val name: String = request.getQueryString("name").getOrElse("")
+      Ok(views.html.menu(playerId, name))
   }
 
   def blackjack(): Action[AnyContent] = Action {
     implicit request: Request[AnyContent] =>
-        Ok(views.html.blackjack())
+      Ok(views.html.blackjack())
   }
 
   def newGame(): Action[AnyContent] = Action.async {

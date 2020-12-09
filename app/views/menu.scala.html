@@ -1,3 +1,4 @@
+@(playerId: String, name: String)
 @main("Game Menu") {
 
 <div class="playing-table">
@@ -7,10 +8,22 @@
         </h1>
     </div>
     <div style="text-align: center">
+        @if(name != "") {
+            <h2>Hello, @name</h2>
+        }
         <a class="btn btn-dark btn-lg" role="button" href="@controllers.routes.HomeController.rules()">Rules</a>
         <br>
         <br>
         <a class="btn btn-dark btn-lg" role="button" href="@controllers.routes.HomeController.playingfield()">Start Game</a>
     </div>
 </div>
+    <script >
+        loggedIn = isLoggedIn();
+        if ("@playerId" === "" && loggedIn === false) {
+            window.location.href = "/login";
+        }
+        if (loggedIn === false) {
+            logIn("@playerId", "@name")
+        }
+    </script>
 }
