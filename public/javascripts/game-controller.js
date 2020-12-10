@@ -96,6 +96,7 @@ class GameController {
                 return;
             }
             self.cardController.revealDealerCards(response.dealerCards);
+            $("#dealerCardValue").text("Card Value: " + response.dealerCardsValue)
             $("#newGame").attr("disabled", false);
         });
     }
