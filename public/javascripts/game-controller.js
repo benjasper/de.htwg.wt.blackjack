@@ -37,7 +37,7 @@ class GameController {
             });
             let cardValue = response.playerCardsValue
             console.log(cardValue)
-            self.playerController.updatePlayerCardValue(cardValue)
+            self.playerController.updatePlayerCardValue(cardValue, 1)
             self.cardController.addFlippedCardToDealer()
 
         });
@@ -66,7 +66,7 @@ class GameController {
             console.log(response);
             let cardValue = response.playerCardsValue
             console.log(cardValue)
-            self.playerController.updatePlayerCardValue(cardValue)
+            self.playerController.updatePlayerCardValue(cardValue, 1)
 
             if (response.gameStates[response.gameStates.length - 1].gameState === "WAITING_FOR_INPUT") {
                 $('#hitGame').attr("disabled", false);
