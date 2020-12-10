@@ -1,6 +1,6 @@
 package controllers
 
-import akka.actor.ActorSystem
+import akka.actor.{Actor, ActorRef, ActorSystem, Props}
 import models.LoginData
 import play.api.data.Form
 import play.api.data.Forms.{mapping, nonEmptyText}
@@ -9,6 +9,8 @@ import javax.inject._
 import play.api.mvc._
 import play.api.libs.ws._
 import play.api.libs.json.{JsValue, Json}
+import play.api.libs.streams.ActorFlow
+import utils.{Observable, Observer}
 
 import scala.concurrent.duration.Duration
 import scala.concurrent.{Await, ExecutionContextExecutor, Future}
@@ -19,9 +21,11 @@ import scala.concurrent.{Await, ExecutionContextExecutor, Future}
  */
 @Singleton
 class HomeController @Inject()(val controllerComponents: ControllerComponents,
-                               ws: WSClient) extends BaseController with play.api.i18n.I18nSupport {
+                               ws: WSClient) extends BaseController with play.api.i18n.I18nSupport with Observable {
   implicit val actorSystem: ActorSystem = ActorSystem("apiExecutionContext")
   implicit val executionContext: ExecutionContextExecutor = actorSystem.dispatcher
+
+  this.add()
 
   val loginForm: Form[LoginData] = Form(
     mapping(
@@ -125,13 +129,42 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents,
   def gameStand(): Action[AnyContent] = Action.async {
     implicit request: Request[AnyContent] =>
       val request: WSRequest = ws.url("http://localhost:9001/game/stand")
+      val player = "5fa3ba4f800df34886c43d15"
       val body: JsValue = Json.obj(
-        "playerId" -> "5fa3ba4f800df34886c43d15"
+        "playerId" -> player
       )
       request.put(body).map {
-        json => Ok(Json.parse(json.body))
+        json =>
+          this.notifyObservers(player,json.json)
       }.recover {
         json => InternalServerError(json.getMessage)
       }
+  }
+
+  def socket: WebSocket = WebSocket.accept[String, String] { request =>
+    ActorFlow.actorRef { out =>
+      MyWebSocketActor.create(out, this)
+    }
+  }
+
+  object MyWebSocketActor {
+    def create(out: ActorRef, controller: HomeController): Props = {
+      val actor = new MyWebSocketActor(out)
+      controller.add(actor)
+      Props(actor)
+    }
+  }
+
+  class MyWebSocketActor(out: ActorRef) extends Actor with Observer {
+
+    def receive = {
+      case msg: String =>
+        out ! ("I received your message: " + msg)
+    }
+
+    override def update(playerId: String, message: JsValue): Unit = {
+
+
+    }
   }
 }
