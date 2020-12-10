@@ -3,7 +3,7 @@ package controllers
 import akka.actor.{Actor, ActorRef, ActorSystem, Props}
 import models.LoginData
 import play.api.data.Form
-import play.api.data.Forms.{mapping, nonEmptyText}
+import play.api.data.Forms.{default, mapping, nonEmptyText}
 
 import javax.inject._
 import play.api.mvc._
@@ -21,11 +21,11 @@ import scala.concurrent.{Await, ExecutionContextExecutor, Future}
  */
 @Singleton
 class HomeController @Inject()(val controllerComponents: ControllerComponents,
-                               ws: WSClient) extends BaseController with play.api.i18n.I18nSupport with Observable {
+                               ws: WSClient) extends BaseController with play.api.i18n.I18nSupport {
   implicit val actorSystem: ActorSystem = ActorSystem("apiExecutionContext")
   implicit val executionContext: ExecutionContextExecutor = actorSystem.dispatcher
 
-  this.add()
+  val gamecontroller = new GameController(ws)
 
   val loginForm: Form[LoginData] = Form(
     mapping(
@@ -98,73 +98,44 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents,
       Ok(views.html.blackjack())
   }
 
-  def newGame(): Action[AnyContent] = Action.async {
-    implicit request: Request[AnyContent] =>
-      val request: WSRequest = ws.url("http://localhost:9001/game/start")
-      val json: JsValue = Json.obj(
-        "playerId" -> "5fa3ba4f800df34886c43d15",
-        "betValue" -> 100
-      )
-
-      request.put(json).map {
-        json => Ok(Json.parse(json.body))
-      }.recover {
-        json => InternalServerError(json.getMessage)
-      }
-  }
-
-  def gameHit(): Action[AnyContent] = Action.async {
-    implicit request: Request[AnyContent] =>
-      val request: WSRequest = ws.url("http://localhost:9001/game/hit")
-      val body: JsValue = Json.obj(
-        "playerId" -> "5fa3ba4f800df34886c43d15"
-      )
-      request.put(body).map {
-        json => Ok(Json.parse(json.body))
-      }.recover {
-        json => InternalServerError(json.getMessage)
-      }
-  }
-
-  def gameStand(): Action[AnyContent] = Action.async {
-    implicit request: Request[AnyContent] =>
-      val request: WSRequest = ws.url("http://localhost:9001/game/stand")
-      val player = "5fa3ba4f800df34886c43d15"
-      val body: JsValue = Json.obj(
-        "playerId" -> player
-      )
-      request.put(body).map {
-        json =>
-          this.notifyObservers(player,json.json)
-      }.recover {
-        json => InternalServerError(json.getMessage)
-      }
-  }
-
-  def socket: WebSocket = WebSocket.accept[String, String] { request =>
+  def socket = WebSocket.accept[String, String] { request =>
     ActorFlow.actorRef { out =>
-      MyWebSocketActor.create(out, this)
+      MyWebSocketActor.props(out)
     }
   }
 
   object MyWebSocketActor {
-    def create(out: ActorRef, controller: HomeController): Props = {
-      val actor = new MyWebSocketActor(out)
-      controller.add(actor)
-      Props(actor)
+    def props(out: ActorRef) = {
+      Props(new MyWebSocketActor(out))
     }
   }
 
   class MyWebSocketActor(out: ActorRef) extends Actor with Observer {
+    gamecontroller.add(this)
 
-    def receive = {
+    def receive: Receive = {
       case msg: String =>
-        out ! ("I received your message: " + msg)
+        println(msg)
+        val json = Json.parse(msg)
+        val action = (json \ "action").get.as[String]
+        val player = (json \ "playerId").get.as[String]
+        action match {
+          case "newGame" =>
+            gamecontroller.newGame(player)
+          case "gameHit" =>
+            gamecontroller.gameHit(player)
+          case "gameStand" =>
+            gamecontroller.gameStand(player)
+          case _ =>
+            out ! Json.obj("message" -> "Wrong action").toString()
+        }
     }
 
-    override def update(playerId: String, message: JsValue): Unit = {
-
-
+    override def update(playerId: String, message: JsValue, action: String): Unit = {
+      out ! Json.obj(
+        "player" -> playerId,
+        "game" -> message,
+        "action" -> action).toString()
     }
   }
 }
