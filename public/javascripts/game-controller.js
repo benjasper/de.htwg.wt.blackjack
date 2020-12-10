@@ -1,6 +1,7 @@
 class GameController {
 
     cardController = new CardController();
+    playerController = new PlayerController();
 
     error(error) {
         alert(error);
@@ -32,8 +33,11 @@ class GameController {
 
             response.playerCards.forEach((card) => {
                 self.cardController.addCardToPlayer(card.card, 1)
+                console.log(response)
             });
-
+            let cardValue = response.playerCardsValue
+            console.log(cardValue)
+            self.playerController.updatePlayerCardValue(cardValue)
             self.cardController.addFlippedCardToDealer()
 
         });
@@ -60,6 +64,9 @@ class GameController {
 
             self.cardController.addCardToPlayer(response.hitCard, 1)
             console.log(response);
+            let cardValue = response.playerCardsValue
+            console.log(cardValue)
+            self.playerController.updatePlayerCardValue(cardValue)
 
             if (response.gameStates[response.gameStates.length - 1].gameState === "WAITING_FOR_INPUT") {
                 $('#hitGame').attr("disabled", false);
