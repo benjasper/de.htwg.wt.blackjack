@@ -33,7 +33,7 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents,
 
   def playingfield(): Action[AnyContent] = Action.async {
     implicit request: Request[AnyContent] =>
-      val request: WSRequest = ws.url("http://localhost:9002/player/5fa3ba4f800df34886c43d15")
+      val request: WSRequest = ws.url("http://localhost:9002/player/5fbe39f714ffa231ca5ba48d")
       request.withRequestTimeout(Duration("3s"))
       request.get().map {
         json => Ok(views.html.playingfield(json.body))
@@ -61,40 +61,40 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents,
     implicit request: Request[AnyContent] =>
       val request: WSRequest = ws.url("http://localhost:9001/game/start")
       val json: JsValue = Json.obj(
-        "playerId" -> "5fa3ba4f800df34886c43d15",
+        "playerId" -> "5fbe39f714ffa231ca5ba48d",
         "betValue" -> 100
       )
 
       request.put(json).map {
-        json => Ok(views.html.playingfield(json.body))
+        json => Ok(Json.parse(json.body))
       }.recover {
-        json => InternalServerError(views.html.playingfield(json.getMessage))
+        json => InternalServerError(json.getMessage)
       }
   }
 
   def gameHit(): Action[AnyContent] = Action.async {
     implicit request: Request[AnyContent] =>
       val request: WSRequest = ws.url("http://localhost:9001/game/hit")
-      val json: JsValue = Json.obj(
-        "playerId" -> "5fa3ba4f800df34886c43d15"
+      val body: JsValue = Json.obj(
+        "playerId" -> "5fbe39f714ffa231ca5ba48d"
       )
-      request.put(json).map {
-        json => Ok(views.html.playingfield(json.body))
+      request.put(body).map {
+        json => Ok(Json.parse(json.body))
       }.recover {
-        json => InternalServerError(views.html.playingfield(json.getMessage))
+        json => InternalServerError(json.getMessage)
       }
   }
 
   def gameStand(): Action[AnyContent] = Action.async {
     implicit request: Request[AnyContent] =>
       val request: WSRequest = ws.url("http://localhost:9001/game/stand")
-      val json: JsValue = Json.obj(
-        "playerId" -> "5fa3ba4f800df34886c43d15"
+      val body: JsValue = Json.obj(
+        "playerId" -> "5fbe39f714ffa231ca5ba48d"
       )
-      request.put(json).map {
-        json => Ok(views.html.playingfield(json.body))
+      request.put(body).map {
+        json => Ok(Json.parse(json.body))
       }.recover {
-        json => InternalServerError(views.html.playingfield(json.getMessage))
+        json => InternalServerError(json.getMessage)
       }
   }
 }
