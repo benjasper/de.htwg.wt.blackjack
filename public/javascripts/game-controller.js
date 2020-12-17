@@ -1,10 +1,10 @@
 class GameController {
 
     cardController = new CardController();
-    socket = new WebSocket('ws://localhost:9000/websocket');
+    socket = new WebSocket('ws://localhost:9000/websocket');// Create WebSocket connection.
 
     constructor() {
-        // Create WebSocket connection.
+
 
         const self = this;
 
