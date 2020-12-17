@@ -1,6 +1,9 @@
 p1cardsValue = 0
 p2cardsValue = 0
 p3cardsValue = 0
+p1Name = "Player 1"
+p2Name = "Player 2"
+p3Name = "Player 3"
 dealerCardsValue = 0
 
 let app;
@@ -56,8 +59,7 @@ class GameController {
                     self.cardController.addFlippedCardToDealer()
 
                     app.$data.p2cardsValue = response.game.playerCardsValue
-
-                    //let dealerCardValue = response.dealerCardsValue
+                    app.$data.p2Name = getLoggedInPlayer().name
 
                     break;
                 case "GAMEHIT":
@@ -103,6 +105,7 @@ class GameController {
     }
 
     newGame(event) {
+        $('#setBetModalBox').modal('hide');
         const request = {
             "action": "newGame",
             "playerId": getLoggedInPlayer().playerId
@@ -143,7 +146,15 @@ $(document).ready(function () {
             p1cardsValue: p1cardsValue,
             p2cardsValue: p2cardsValue,
             p3cardsValue: p3cardsValue,
+            p1Name: p1Name,
+            p2Name: p2Name,
+            p3Name: p3Name,
             dealerCardsValue: dealerCardsValue
+        },
+        methods: {
+            playAction: function () {gameController.newGame(undefined)},
+            hitAction: function() {gameController.hitGame(undefined)},
+            standAction: function() {gameController.gameStand(undefined)},
         }
     })
 })

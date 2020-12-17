@@ -1,7 +1,8 @@
 @(response: String)
 
-    @main("Playing Field") {
-        <div id="app" class="playing-table">
+@main("Playing Field") {
+    <div id="app" class="wrapper">
+        <div class="playing-table">
             <section class="dealer">
                 <div class="col"></div>
                 <div id="hand-dealer" class="col hand-dealer">
@@ -28,7 +29,7 @@
                     </ul>
                     <div class="info">
                         <span>Cards Value: {{p1cardsValue}}</span>
-                        <span>Player 1</span>
+                        <span>{{p1Name}}</span>
                     </div>
                 </div>
                 <div id="player-stack-player-2" class="player-stack player-2">
@@ -39,7 +40,7 @@
                     </ul>
                     <div class="info">
                         <span id="playerCardValue-2">Cards Value: {{p2cardsValue}}</span>
-                        <span>Player 2</span>
+                        <span>{{p2Name}}</span>
                     </div>
                 </div>
                 <div id="player-stack-player-3" class="player-stack player-3">
@@ -50,7 +51,7 @@
                     </ul>
                     <div class="info">
                         <span id="playerCardValue-3">Cards Value: {{p3cardsValue}}</span>
-                        <span>Player 3</span>
+                        <span>{{p3Name}}</span>
                     </div>
                 </div>
             </section>
@@ -72,7 +73,7 @@
                         </label>
                     </div>
                     <div class="modal-footer">
-                        <button id="start-game" type="button" class="btn btn-primary">PLAY!</button>
+                        <button v-on:click="playAction" id="start-game" type="button" class="btn btn-primary">PLAY!</button>
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                     </div>
                 </div>
@@ -90,8 +91,8 @@
                 <div class="col-md-6 actions control-child">
                     <div class="row h-100">
                         <div class="m-auto">
-                            <input type="button" class="btn btn-light btn-lg" id="hitGame" disabled value="HIT">
-                            <input type="button" class="btn btn-light btn-lg" id="standGame" disabled value="STAND">
+                            <input v-on:click="hitAction" type="button" class="btn btn-light btn-lg" id="hitGame" disabled value="HIT">
+                            <input v-on:click="standAction" type="button" class="btn btn-light btn-lg" id="standGame" disabled value="STAND">
                         </div>
                     </div>
                 </div>
@@ -100,18 +101,19 @@
                 </div>
             </div>
         </div>
-    }
+    </div>
+}
 
-    <script>
-            $(document).ready(function () {
+<script>
+        $(document).ready(function () {
 
-                // Attach Button click event listener
-                $("#newGame").click(function () {
+            // Attach Button click event listener
+            $("#newGame").click(function () {
 
-                    // show Modal
-                    $('#setBetModalBox').modal('show');
-                });
-
-
+                // show Modal
+                $('#setBetModalBox').modal('show');
             });
-    </script>
+
+
+        });
+</script>
