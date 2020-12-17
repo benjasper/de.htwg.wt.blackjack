@@ -20,6 +20,10 @@
 <script>
 export default {
   name: "Menu",
+  arguments: {
+    name: {},
+    id: {}
+  },
   methods: {
     checkLoggedIn() {
       let playerID;
