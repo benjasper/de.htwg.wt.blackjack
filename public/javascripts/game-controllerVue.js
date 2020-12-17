@@ -70,6 +70,7 @@ class GameController {
 
                     self.cardController.addCardToPlayer(response.game.hitCard, 1)
                     console.log(response.game);
+                    app.$data.p2cardsValue = response.game.playerCardsValue
 
                     if (response.game.gameStates[response.game.gameStates.length - 1].gameState === "WAITING_FOR_INPUT") {
                         $('#hitGame').attr("disabled", false);
@@ -80,8 +81,7 @@ class GameController {
 
                     self.cardController.revealDealerCards(response.game.dealerCards);
                     $("#newGame").attr("disabled", false);
-
-                    app.$data.p2cardsValue = response.game.playerCardsValue
+                    app.$data.dealerCardsValue = response.game.dealerCardsValue
 
                     break;
                 case "GAMESTAND":
@@ -106,6 +106,10 @@ class GameController {
 
     newGame(event) {
         $('#setBetModalBox').modal('hide');
+        app.$data.dealerCardsValue = 0
+        app.$data.p1cardsValue = 0
+        app.$data.p2cardsValue = 0
+        app.$data.p3cardsValue = 0
         const request = {
             "action": "newGame",
             "playerId": getLoggedInPlayer().playerId
