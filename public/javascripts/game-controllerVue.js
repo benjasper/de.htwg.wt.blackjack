@@ -1,6 +1,9 @@
 p1cardsValue = 0
 p2cardsValue = 0
 p3cardsValue = 0
+dealerCardsValue = 0
+
+let app;
 
 class GameController {
 
@@ -52,6 +55,10 @@ class GameController {
 
                     self.cardController.addFlippedCardToDealer()
 
+                    app.$data.p2cardsValue = response.game.playerCardsValue
+
+                    //let dealerCardValue = response.dealerCardsValue
+
                     break;
                 case "GAMEHIT":
                     if ('success' in response.game && response.game.success === false) {
@@ -71,6 +78,9 @@ class GameController {
 
                     self.cardController.revealDealerCards(response.game.dealerCards);
                     $("#newGame").attr("disabled", false);
+
+                    app.$data.p2cardsValue = response.game.playerCardsValue
+
                     break;
                 case "GAMESTAND":
                     if ('success' in response.game && response.game.success === false) {
@@ -79,6 +89,10 @@ class GameController {
                     }
                     self.cardController.revealDealerCards(response.game.dealerCards);
                     $("#newGame").attr("disabled", false);
+                    app.$data.p2cardsValue = response.game.playerCardsValue
+
+                    app.$data.dealerCardsValue = response.game.dealerCardsValue
+
                     break;
             }
         });
@@ -123,12 +137,13 @@ class GameController {
 }
 
 $(document).ready(function () {
-    let app = new Vue({
+    app = new Vue({
         el: '#app',
         data: {
             p1cardsValue: p1cardsValue,
             p2cardsValue: p2cardsValue,
-            p3cardsValue: p3cardsValue
+            p3cardsValue: p3cardsValue,
+            dealerCardsValue: dealerCardsValue
         }
     })
 })

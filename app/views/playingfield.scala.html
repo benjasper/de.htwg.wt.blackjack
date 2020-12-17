@@ -10,6 +10,9 @@
                             <img class="playing-card" src="/assets/images/cards/5D.png" alt="Card">
                         </li>
                     </ul>
+                    <div class="info">
+                        <span id="dealerCardValue">Card Value: {{dealerCardsValue}}</span>
+                    </div>
                 </div>
                 <div class="col stack">
                     <img class="playing-card" src="/assets/images/cards/blue_back.png" alt="Card">
@@ -35,7 +38,7 @@
                         </li>
                     </ul>
                     <div class="info">
-                        <span>Cards Value: 5</span>
+                        <span id="playerCardValue-2">Cards Value: {{p2cardsValue}}</span>
                         <span>Player 2</span>
                     </div>
                 </div>
@@ -46,7 +49,7 @@
                         </li>
                     </ul>
                     <div class="info">
-                        <span>Cards Value: 5</span>
+                        <span id="playerCardValue-3">Cards Value: {{p3cardsValue}}</span>
                         <span>Player 3</span>
                     </div>
                 </div>
@@ -108,5 +111,7 @@
                     // show Modal
                     $('#setBetModalBox').modal('show');
                 });
+
+
             });
     </script>
