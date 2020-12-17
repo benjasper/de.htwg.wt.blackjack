@@ -9,7 +9,8 @@ class Player {
 }
 
 function isLoggedIn() {
-    return localStorage.getItem("playerId") !== null;
+    const playerId = localStorage.getItem("playerId")
+    return playerId !== null && playerId !== "";
 }
 
 function getLoggedInPlayer() {

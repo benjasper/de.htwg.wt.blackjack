@@ -21,10 +21,11 @@
     </div>
     <script >
             $(function () {
-                loggedIn = isLoggedIn();
+                const loggedIn = isLoggedIn();
                 if ("@playerId" === "" && loggedIn === false) {
                     window.location.href = "/login";
                 }
+
                 if (loggedIn === false) {
                     logIn("@playerId", "@name")
                 }
