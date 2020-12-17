@@ -1,7 +1,7 @@
 @(response: String)
 
     @main("Playing Field") {
-        <div class="playing-table">
+        <div id="app" class="playing-table">
             <section class="dealer">
                 <div class="col"></div>
                 <div id="hand-dealer" class="col hand-dealer">
@@ -24,7 +24,7 @@
                         </li>
                     </ul>
                     <div class="info">
-                        <span>Cards Value: 5</span>
+                        <span>Cards Value: {{p1cardsValue}}</span>
                         <span>Player 1</span>
                     </div>
                 </div>
