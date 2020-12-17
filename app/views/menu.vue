@@ -1,5 +1,5 @@
 <template>
-  <div class="playing-table">
+  <div class="playing-table" v-model="checkLoggedIn">
     <div id="heading">
       <h1 style="text-align: center">
         Game Menu
@@ -18,13 +18,22 @@
 </template>
 
 <script>
-loggedIn = isLoggedIn();
-if ("@playerId" === "" && loggedIn === false) {
-  window.location.href = "/login";
+export default {
+  name: "Menu",
+  methods: {
+    checkLoggedIn() {
+      let playerID;
+      playerID = isLoggedIn();
+      if ("@playerId" === "" && playerID === false) {
+        window.location.href = "/login";
+      }
+      if (playerID === false) {
+        logIn("@playerId", "@name")
+      }
+    },
+  },
 }
-if (loggedIn === false) {
-  logIn("@playerId", "@name")
-}
+
 </script>
 
 <style>
