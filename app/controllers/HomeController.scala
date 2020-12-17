@@ -90,7 +90,6 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents,
     implicit request: Request[AnyContent] =>
       val playerId: String = request.getQueryString("playerId").getOrElse("")
       val name: String = request.getQueryString("name").getOrElse("")
-      Ok(this.menu(playerId, name))
       Ok(views.html.menu(playerId, name))
   }
 

@@ -1,8 +1,10 @@
-cardController = new CardController();
+console.log("Yes I'm here!")
+
 socket = new WebSocket('ws://localhost:9000/websocket');// Create WebSocket connection.
 
 function constructor() {
 
+    cardController = new CardController();
 
     const self = this;
 
