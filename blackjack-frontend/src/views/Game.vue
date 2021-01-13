@@ -17,7 +17,7 @@
           </div>
         </div>
         <div class="col stack">
-          <img class="playing-card" src="/images/cards/blue_back.png" alt="Card">
+          <CardComponent :cardKey="'5H'" :isHidden="true"></CardComponent>
         </div>
       </section>
 
@@ -101,7 +101,8 @@
 <script lang="ts">
 import Vue from 'vue'
 import PlayerComponent from '@/components/Player.vue'
-import {Component} from 'vue-property-decorator'
+import CardComponent from '@/components/Card.vue'
+import Component from 'vue-class-component'
 
 class Card {
   public cardKey = ''
@@ -131,22 +132,23 @@ function getLoggedInPlayer(): Player {
   // return new Player('', '')
 }
 
-@Component
-export default class Game extends Vue.extend({
+@Component({
   components: {
-    PlayerComponent
+    PlayerComponent,
+    CardComponent
   },
   name: 'Game'
-}) {
-  playerNumber = 1
-  dialog = false
-  gameInProgress = false
-  actionsEnabled = false
-  playerCardStacks = [[], [], []] as Card[][]
-  playerCardStackValues = [0, 0, 0] as number[]
-  playerNames = ['', '', ''] as string[]
-  dealerCards: Card[] = []
-  dealerCardsValue = 0 as number
+})
+export default class Game extends Vue {
+  public playerNumber = 1
+  public dialog = false
+  public gameInProgress = false
+  public actionsEnabled = false
+  public playerCardStacks = [[], [], []] as Card[][]
+  public playerCardStackValues = [0, 0, 0] as number[]
+  public playerNames = ['', '', ''] as string[]
+  public dealerCards: Card[] = []
+  public dealerCardsValue = 0 as number
 
   socket: WebSocket
 
@@ -161,80 +163,83 @@ export default class Game extends Vue.extend({
     })
 
     this.socket.addEventListener('close', (event) => {
+      this.socket = new WebSocket('ws://localhost:9000/websocket')
       console.log(event)
     })
 
     // Listen for messages
-    this.socket.addEventListener('message', (event) => {
-      console.log('Message from server ', event.data)
-      const response = JSON.parse(event.data)
-      switch (response.action) {
-        case 'NEWGAME':
-          this.dealerCards = []
-          this.playerCardStacks.forEach((stack: Card[], index: number) => {
-            Vue.set(this.playerCardStacks, index, [])
-          })
+    this.socket.addEventListener('message', this.responseAction)
+  }
 
-          this.gameInProgress = true
+  private responseAction(event: any) {
+    console.log('Message from server ', event.data)
+    const response = JSON.parse(event.data)
+    switch (response.action) {
+      case 'NEWGAME':
+        this.dealerCards = []
+        this.playerCardStacks.forEach((stack: Card[], index: number) => {
+          Vue.set(this.playerCardStacks, index, [])
+        })
 
-          this.actionsEnabled = true
+        this.gameInProgress = true
 
-          if ('success' in response.game && response.game.success === false) {
-            this.error(response.game.msg)
-            return
-          }
+        this.actionsEnabled = true
 
-          this.dealerCards.push(new Card('5H', true))
+        if ('success' in response.game && response.game.success === false) {
+          this.error(response.game.msg)
+          return
+        }
 
-          response.game.playerCards.forEach((card: any) => {
-            this.playerCardStacks[this.playerNumber].push(new Card(card.card))
-            Vue.set(this.playerCardStacks, this.playerNumber, this.playerCardStacks[this.playerNumber])
-          })
+        this.dealerCards.push(new Card('5H', true))
 
-          this.dealerCards.push(new Card('5H', true))
+        response.game.playerCards.forEach((card: any) => {
+          this.playerCardStacks[this.playerNumber].push(new Card(card.card))
+          Vue.set(this.playerCardStacks, this.playerNumber, this.playerCardStacks[this.playerNumber])
+        })
 
-          Vue.set(this.playerCardStackValues, this.playerNumber, response.game.playerCardsValue)
-          Vue.set(this.playerNames, this.playerNumber, getLoggedInPlayer().name)
+        this.dealerCards.push(new Card('5H', true))
 
-          break
-        case 'GAMEHIT':
-          if ('success' in response.game && response.game.success === false) {
-            this.error(response.game.msg)
-            return
-          }
+        Vue.set(this.playerCardStackValues, this.playerNumber, response.game.playerCardsValue)
+        Vue.set(this.playerNames, this.playerNumber, getLoggedInPlayer().name)
 
-          this.playerCardStacks[this.playerNumber].push(new Card(response.game.hitCard))
-          console.log(response.game)
-          this.playerCardStackValues[this.playerNumber] = response.game.playerCardsValue
+        break
+      case 'GAMEHIT':
+        if ('success' in response.game && response.game.success === false) {
+          this.error(response.game.msg)
+          return
+        }
 
-          if (response.game.gameStates[response.game.gameStates.length - 1].gameState === 'WAITING_FOR_INPUT') {
-            // TODO: Allow hit stand
+        this.playerCardStacks[this.playerNumber].push(new Card(response.game.hitCard))
+        console.log(response.game)
+        this.playerCardStackValues[this.playerNumber] = response.game.playerCardsValue
 
-            return
-          }
+        if (response.game.gameStates[response.game.gameStates.length - 1].gameState === 'WAITING_FOR_INPUT') {
+          // TODO: Allow hit stand
 
-          this.actionsEnabled = false
-          this.revealDealerCards(response.game.dealerCards)
-          this.gameInProgress = false
-          this.dealerCardsValue = response.game.dealerCardsValue
+          return
+        }
 
-          break
-        case 'GAMESTAND':
-          if ('success' in response.game && response.game.success === false) {
-            this.error(response.game.msg)
-            return
-          }
+        this.actionsEnabled = false
+        this.revealDealerCards(response.game.dealerCards)
+        this.gameInProgress = false
+        this.dealerCardsValue = response.game.dealerCardsValue
 
-          this.actionsEnabled = false
-          this.revealDealerCards(response.game.dealerCards)
-          this.gameInProgress = false
-          Vue.set(this.playerCardStackValues, this.playerNumber, response.game.playerCardsValue)
+        break
+      case 'GAMESTAND':
+        if ('success' in response.game && response.game.success === false) {
+          this.error(response.game.msg)
+          return
+        }
 
-          this.dealerCardsValue = response.game.dealerCardsValue
+        this.actionsEnabled = false
+        this.revealDealerCards(response.game.dealerCards)
+        this.gameInProgress = false
+        Vue.set(this.playerCardStackValues, this.playerNumber, response.game.playerCardsValue)
 
-          break
-      }
-    })
+        this.dealerCardsValue = response.game.dealerCardsValue
+
+        break
+    }
   }
 
   private revealDealerCards(dealerCards: any) {
