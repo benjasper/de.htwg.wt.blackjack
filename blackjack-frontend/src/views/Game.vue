@@ -23,7 +23,8 @@
 
       <section class="players">
         <div v-for="(name, index) in playerNames" :key="'player-' + name + '-' + index">
-          <PlayerComponent :name="name" :number="index" :cards="playerCardStacks[index]" :cardsValue="playerCardStackValues[index]"></PlayerComponent>
+          <PlayerComponent :name="name" :number="index" :cards="playerCardStacks[index]"
+                           :cardsValue="playerCardStackValues[index]"></PlayerComponent>
         </div>
       </section>
     </div>
@@ -31,7 +32,7 @@
       <div class="row">
         <div class="col-md-3 menu control-child">
           <div class="row h-100 m-auto">
-            <v-btn to="/">Back</v-btn>
+            <v-btn :disabled="gameInProgress" to="/">Back</v-btn>
             <v-dialog
               v-model="dialog"
               max-width="290"
@@ -95,6 +96,35 @@
         </div>
       </div>
     </div>
+    <v-dialog
+      v-model="endDialog"
+      persistent
+      max-width="290"
+    >
+      <v-card>
+        <v-card-title class="headline">
+          Game ended
+        </v-card-title>
+        <v-card-text>{{ endText }}</v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn
+            color="green darken-1"
+            text
+            @click="endDialog = false; dialog = true"
+          >
+            New game
+          </v-btn>
+          <v-btn
+            color="green darken-1"
+            text
+            @click="endDialog = false"
+          >
+            Ok
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </div>
 </template>
 
@@ -149,6 +179,8 @@ export default class Game extends Vue {
   public playerNames = ['', '', ''] as string[]
   public dealerCards: Card[] = []
   public dealerCardsValue = 0 as number
+  public endDialog = false
+  public endText = ''
 
   socket: WebSocket
 
@@ -230,6 +262,8 @@ export default class Game extends Vue {
         this.gameInProgress = false
         this.dealerCardsValue = response.game.dealerCardsValue
 
+        this.finishGame(response.game.gameStates)
+
         break
       case 'GAMESTAND':
         if ('success' in response.game && response.game.success === false) {
@@ -243,9 +277,32 @@ export default class Game extends Vue {
         Vue.set(this.playerCardStackValues, this.playerNumber, response.game.playerCardsValue)
 
         this.dealerCardsValue = response.game.dealerCardsValue
+        this.finishGame(response.game.gameStates)
 
         break
     }
+  }
+
+  private finishGame(gamestates: any[]) {
+    const playerName = this.playerNames[this.playerNumber]
+    gamestates.forEach(gamestate => {
+      console.log(gamestate)
+      switch (gamestate.gameState) {
+        case 'PLAYER_BUST':
+          this.endText = `${playerName} busted and lost the game.`
+          break
+        case 'DEALER_BUST':
+          this.endText = `${playerName} the dealer busted.`
+          break
+        case 'PLAYER_LOOSE':
+          this.endText = `${playerName} loses this game.`
+          break
+        case 'PLAYER_WINS':
+          this.endText = `${playerName} wins this game!`
+          break
+      }
+    })
+    this.endDialog = true
   }
 
   private revealDealerCards(dealerCards: any) {
@@ -260,6 +317,7 @@ export default class Game extends Vue {
   }
 
   public newGame() {
+    this.endDialog = false
     this.dealerCardsValue = 0
     this.playerCardStackValues.forEach((value, index) => {
       Vue.set(this.playerCardStackValues, index, 0)
