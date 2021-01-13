@@ -12,7 +12,13 @@ export default class CardComponent extends Vue.extend({
 }) {
   @Prop({required: true, default: '5H'}) readonly cardKey?: string
   @Prop({required: true, default: false}) readonly isHidden?: boolean
-
   src = `/images/cards/${this.cardKey}.png`
+
+  constructor() {
+    super()
+    if (this.isHidden) {
+      this.src = '/images/cards/red_back.png'
+    }
+  }
 }
 </script>
