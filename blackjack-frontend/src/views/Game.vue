@@ -5,8 +5,11 @@
         <div class="col"></div>
         <div id="hand-dealer" class="col hand-dealer">
           <ul class="cards">
-            <li class="placeholder">
+            <li class="placeholder" v-if="dealerCards.length === 0">
               <img class="playing-card" src="/images/cards/5D.png" alt="Card">
+            </li>
+            <li v-for="(card, index) in dealerCards" :key="'dealer-' + card.cardKey + '-' + index">
+              <CardComponent :cardKey="card.cardKey" :isHidden="card.hidden"></CardComponent>
             </li>
           </ul>
           <div class="info-stats">
@@ -19,64 +22,10 @@
       </section>
 
       <section class="players">
-        <div id="player-stack-player-1" class="player-stack player-1">
-          <ul class="cards">
-            <li class="placeholder">
-              <img class="playing-card" src="/images/cards/5D.png" alt="Card">
-            </li>
-          </ul>
-          <div class="info-stats">
-            <span>Cards Value: {{ p1cardsValue }}</span>
-            <span>{{ p1Name }}</span>
-          </div>
-        </div>
-        <div id="player-stack-player-2" class="player-stack player-2">
-          <ul class="cards">
-            <li class="placeholder">
-              <img class="playing-card" style="visibility: hidden" src="/images/cards/5D.png" alt="Card">
-            </li>
-          </ul>
-          <div class="info-stats">
-            <span id="playerCardValue-2">Cards Value: {{ p2cardsValue }}</span>
-            <span>{{ p2Name }}</span>
-          </div>
-        </div>
-        <div id="player-stack-player-3" class="player-stack player-3">
-          <ul class="cards">
-            <li class="placeholder">
-              <img class="playing-card" src="/images/cards/5D.png" alt="Card">
-            </li>
-          </ul>
-          <div class="info-stats">
-            <span id="playerCardValue-3">Cards Value: {{ p3cardsValue }}</span>
-            <span>{{ p3Name }}</span>
-          </div>
+        <div v-for="(name, index) in playerNames" :key="'player-' + name + '-' + index">
+          <PlayerComponent :name="name" :number="index" :cards="playerCardStacks[index]" :cardsValue="playerCardStackValues[index]"></PlayerComponent>
         </div>
       </section>
-    </div>
-    <div class="modal fade" id="setBetModalBox" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
-         aria-hidden="true">
-      <div class="modal-dialog" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title">Set Your Bet!</h5>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
-            </button>
-          </div>
-          <div class="modal-body">
-            <p>Set your bet for the next game:</p>
-            <label>
-              Bet value
-              <input type="number" max="">
-            </label>
-          </div>
-          <div class="modal-footer">
-            <v-btn v-on:click="playAction" id="start-game" type="button">PLAY!</v-btn>
-            <v-btn type="button" data-dismiss="modal">Close</v-btn>
-          </div>
-        </div>
-      </div>
     </div>
     <div class="container-fluid control-bar">
       <div class="row">
@@ -94,6 +43,7 @@
                   v-bind="attrs"
                   v-on="on"
                   class="ml-1"
+                  :disabled="gameInProgress"
                 >
                   NEW GAME
                 </v-btn>
@@ -122,12 +72,11 @@
                       </v-col>
                     </v-row>
                   </v-container>
-
                 </v-card-text>
                 <v-card-actions>
                   <v-spacer></v-spacer>
                   <v-btn type="button" text @click="dialog = false">Close</v-btn>
-                  <v-btn v-on:click="playAction" id="start-game" type="button" @click="dialog = false">PLAY!</v-btn>
+                  <v-btn @click="dialog = false; newGame()" id="start-game" type="button">PLAY!</v-btn>
                 </v-card-actions>
               </v-card>
             </v-dialog>
@@ -136,8 +85,8 @@
         <div class="col-md-6 actions control-child">
           <div class="row h-100">
             <div class="m-auto">
-              <v-btn v-on:click="hitAction" type="button" id="hitGame" disabled value="HIT"></v-btn>
-              <v-btn v-on:click="standAction" type="button" id="standGame" disabled value="STAND"></v-btn>
+              <v-btn @click="hitGame()" type="button" id="hitGame" :disabled="!gameInProgress">HIT</v-btn>
+              <v-btn @click="gameStand()" type="button" id="standGame" :disabled="!gameInProgress">STAND</v-btn>
             </div>
           </div>
         </div>
@@ -149,12 +98,180 @@
   </div>
 </template>
 
-<script>
-export default {
-  data () {
-    return {
-      dialog: false
-    }
+<script lang="ts">
+import Vue from 'vue'
+import PlayerComponent from '@/components/Player.vue'
+
+class Card {
+  public cardKey = ''
+  public hidden = false
+
+  constructor(cardKey: string, hidden = false) {
+    this.cardKey = cardKey
+    this.hidden = hidden
   }
 }
+
+class Player {
+  playerId = ''
+  name = ''
+
+  constructor(playerId: string, name: string) {
+    this.playerId = playerId
+    this.name = name
+  }
+}
+
+function getLoggedInPlayer(): Player {
+  if (localStorage.getItem('player') != null) {
+    return JSON.parse(localStorage.getItem('player') ?? '')
+  }
+  return new Player('', '')
+}
+
+export default class Game extends Vue.extend({
+  components: {
+    PlayerComponent
+  },
+  name: 'Game'
+}) {
+  playerNumber = 1
+  dialog = false
+  gameInProgress = false
+  playerCardStacks = [[], [], []] as Card[][]
+  playerCardStackValues = [0, 0, 0] as number[]
+  playerNames = ['', '', ''] as string[]
+  dealerCards = [] as Card[]
+  dealerCardsValue = 0 as number
+
+  socket: WebSocket
+
+  constructor() {
+    super()
+
+    this.socket = new WebSocket('ws://localhost:9000/websocket')
+
+    // Connection opened
+    this.socket.addEventListener('open', (event) => {
+      console.log(event)
+    })
+
+    this.socket.addEventListener('close', (event) => {
+      console.log(event)
+    })
+
+    // Listen for messages
+    this.socket.addEventListener('message', (event) => {
+      console.log('Message from server ', event.data)
+      const response = JSON.parse(event.data)
+      switch (response.action) {
+        case 'NEWGAME':
+          this.dealerCards = []
+          this.playerCardStacks.forEach((stack: Card[], index: number) => {
+            this.playerCardStacks[index] = []
+          })
+
+          this.gameInProgress = true
+
+          // $('#hitGame').attr('disabled', false)
+          // $('#standGame').attr('disabled', false)
+
+          if ('success' in response.game && response.game.success === false) {
+            this.error(response.game.msg)
+            return
+          }
+
+          this.dealerCards.push(new Card('', true))
+
+          response.game.playerCards.forEach((card: any) => {
+            this.playerCardStacks[this.playerNumber].push(new Card(card.card))
+          })
+
+          this.dealerCards.push(new Card('', true))
+
+          this.playerCardStackValues[this.playerNumber] = response.game.playerCardsValue
+          this.playerNames[this.playerNumber] = getLoggedInPlayer().name
+
+          break
+        case 'GAMEHIT':
+          if ('success' in response.game && response.game.success === false) {
+            this.error(response.game.msg)
+            return
+          }
+
+          this.playerCardStacks[this.playerNumber].push(new Card(response.game.hitCard))
+          console.log(response.game)
+          this.playerCardStackValues[this.playerNumber] = response.game.playerCardsValue
+
+          if (response.game.gameStates[response.game.gameStates.length - 1].gameState === 'WAITING_FOR_INPUT') {
+            // TODO: Allow hit stand
+
+            return
+          }
+
+          this.revealDealerCards(response.game.dealerCards)
+          this.gameInProgress = false
+          this.dealerCardsValue = response.game.dealerCardsValue
+
+          break
+        case 'GAMESTAND':
+          if ('success' in response.game && response.game.success === false) {
+            this.error(response.game.msg)
+            return
+          }
+
+          this.revealDealerCards(response.game.dealerCards)
+          this.gameInProgress = false
+          this.playerCardStackValues[this.playerNumber] = response.game.playerCardsValue
+
+          this.dealerCardsValue = response.game.dealerCardsValue
+
+          break
+      }
+    })
+  }
+
+  private revealDealerCards(dealerCards: any) {
+    this.dealerCards = []
+    dealerCards.forEach((element: any) => {
+      this.dealerCards.push(new Card(element.card))
+    })
+  }
+
+  public error(error: string) {
+    alert(error)
+  }
+
+  public newGame() {
+    this.dealerCardsValue = 0
+    this.playerCardStackValues.forEach((value, index) => {
+      this.playerCardStackValues[index] = 0
+    })
+    const request = {
+      action: 'newGame',
+      playerId: getLoggedInPlayer().playerId
+    }
+
+    this.socket.send(JSON.stringify(request))
+  }
+
+  public hitGame() {
+    const request = {
+      action: 'gameHit',
+      playerId: getLoggedInPlayer().playerId
+    }
+
+    this.socket.send(JSON.stringify(request))
+  }
+
+  public gameStand() {
+    const request = {
+      action: 'gameStand',
+      playerId: getLoggedInPlayer().playerId
+    }
+
+    this.socket.send(JSON.stringify(request))
+  }
+}
+
 </script>
