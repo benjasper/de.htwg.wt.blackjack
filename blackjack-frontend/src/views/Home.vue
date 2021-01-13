@@ -10,7 +10,7 @@
       <a class="btn btn-dark btn-lg" role="button">Rules</a>
       <br>
       <br>
-      <a class="btn btn-dark btn-lg" role="button">Start Game</a>
+      <router-link to="/game" class="btn btn-dark btn-lg" role="button">Start Game</router-link>
     </div>
   </div>
 </template>
