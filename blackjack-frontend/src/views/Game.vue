@@ -155,20 +155,26 @@ export default class Game extends Vue {
   constructor() {
     super()
 
-    this.socket = new WebSocket('ws://localhost:9000/websocket')
+    this.socket = this.initializeSocket()
+  }
+
+  private initializeSocket(): WebSocket {
+    const socket = new WebSocket('ws://localhost:9000/websocket')
 
     // Connection opened
-    this.socket.addEventListener('open', (event) => {
+    socket.addEventListener('open', (event) => {
       console.log(event)
     })
 
-    this.socket.addEventListener('close', (event) => {
-      this.socket = new WebSocket('ws://localhost:9000/websocket')
+    socket.addEventListener('close', (event) => {
+      this.socket = this.initializeSocket()
       console.log(event)
     })
 
     // Listen for messages
-    this.socket.addEventListener('message', this.responseAction)
+    socket.addEventListener('message', this.responseAction)
+
+    return socket
   }
 
   private responseAction(event: any) {
