@@ -25,6 +25,10 @@ p, h2, h3, h4, li {
   font-family: @text-font;
 }
 
+.row {
+  margin: 0 !important;
+}
+
 .menu-buttons {
   background-color: black;
   border: none;
@@ -137,8 +141,9 @@ p, h2, h3, h4, li {
   position: absolute;
   bottom: 0;
   background-color: #51290f;
-  background-image: url("/assets/images/wood.jpg");
+  background-image: url("/images/wood.jpg");
   font-size: 1.4em;
+  background-repeat: repeat;
 
   .control-child {
     padding: 1em;
@@ -153,5 +158,9 @@ p, h2, h3, h4, li {
     text-align: center;
     color: white;
     margin: auto 0;
+
+    span {
+      font-size: 1.2rem;
+    }
   }
 }

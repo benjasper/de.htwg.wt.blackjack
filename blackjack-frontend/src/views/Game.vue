@@ -12,7 +12,7 @@
               <CardComponent :cardKey="card.cardKey" :isHidden="card.hidden"></CardComponent>
             </li>
           </ul>
-          <div class="info-stats">
+          <div v-if="false" class="info-stats">
             <span id="dealerCardValue">Card Value: {{ dealerCardsValue }}</span>
           </div>
         </div>
@@ -29,10 +29,10 @@
       </section>
     </div>
     <div class="container-fluid control-bar">
-      <div class="row">
-        <div class="col-md-3 menu control-child">
-          <div class="row h-100 m-auto">
-            <v-btn :disabled="gameInProgress" to="/">Back</v-btn>
+      <v-row>
+        <v-col class="menu control-child">
+          <v-row class="m-auto">
+            <v-btn class="ml-auto" :disabled="gameInProgress" to="/">Back</v-btn>
             <v-dialog
               v-model="dialog"
               max-width="290"
@@ -43,7 +43,7 @@
                   dark
                   v-bind="attrs"
                   v-on="on"
-                  class="ml-1"
+                  class="m-auto ml-1"
                   :disabled="gameInProgress"
                 >
                   NEW GAME
@@ -81,20 +81,20 @@
                 </v-card-actions>
               </v-card>
             </v-dialog>
-          </div>
-        </div>
-        <div class="col-md-6 actions control-child">
-          <div class="row h-100">
+          </v-row>
+        </v-col>
+        <v-col class="actions control-child">
+          <v-row class="m-auto">
             <div class="m-auto">
               <v-btn @click="hitGame()" type="button" id="hitGame" :disabled="!actionsEnabled">HIT</v-btn>
-              <v-btn @click="gameStand()" type="button" id="standGame" :disabled="!actionsEnabled">STAND</v-btn>
+              <v-btn class="ml-1" @click="gameStand()" type="button" id="standGame" :disabled="!actionsEnabled">STAND</v-btn>
             </div>
-          </div>
-        </div>
-        <div class="col-md-3 stats control-child">
+          </v-row>
+        </v-col>
+        <v-col class="stats control-child">
           <span>Balance: 1000$</span>
-        </div>
-      </div>
+        </v-col>
+      </v-row>
     </div>
     <v-dialog
       v-model="endDialog"
