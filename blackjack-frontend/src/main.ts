@@ -3,6 +3,8 @@ import App from './App.vue'
 import './registerServiceWorker'
 import router from './router'
 import vuetify from './plugins/vuetify'
+import './assets/styles/bootstrap.min.css'
+import './assets/styles/main.less'
 
 Vue.config.productionTip = false
 

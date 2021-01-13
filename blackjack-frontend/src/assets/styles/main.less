@@ -1,0 +1,157 @@
+@import "config.less";
+body {
+  background-color: @playing-table-green;
+  font-family: 'Source Sans Pro', sans-serif;
+}
+
+html, body, ul, li {
+  margin: 0;
+  padding: 0;
+}
+
+ul, li {
+  list-style: none;
+}
+
+h1 {
+  font-family: @heading-font;
+  font-weight: bold;
+  font-size: 75px;
+  margin: 0;
+  padding-top: 1em;
+}
+
+p, h2, h3, h4, li {
+  font-family: @text-font;
+}
+
+.menu-buttons {
+  background-color: black;
+  border: none;
+  color: white;
+  padding: 15px 32px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 25px;
+  font-family: @text-font;
+  cursor: pointer;
+}
+
+.playing-card {
+  width: 2em;
+  object-fit: contain;
+}
+
+.playing-table {
+  width: 100vw;
+  background-color: @playing-table-green;
+  display: flex;
+  flex-flow: column;
+  height: 100vh;
+
+  .placeholder {
+    visibility: hidden;
+  }
+
+  .playing-card {
+    width: 8em;
+
+    @media only screen and (max-width: 768px) {
+      width: 4em;
+      margin: 0 auto;
+    }
+
+    @media only screen and (max-width: 578px) {
+      width: 3em;
+      margin: 0 auto;
+    }
+  }
+
+  section.dealer {
+    display: flex;
+    flex-direction: row;
+    flex-flow: row;
+    justify-content: center;
+    padding: 2em 10vw 0 10vw;
+
+    .hand-dealer {
+      justify-content: center;
+      display: flex;
+      flex-direction: row;
+      flex-flow: row;
+    }
+  }
+
+  section.players {
+    width: 100vw;
+    display: flex;
+    flex-direction: row;
+    flex-flow: row;
+    justify-content: space-evenly;
+    bottom: 0;
+    margin: auto;
+  }
+}
+
+.player-stack, .hand-dealer {
+  /* TODO: Border for Player-stack responsive
+  border: 5px solid white;
+  padding: 3em;
+  border-radius: 2em;*/
+
+  img {
+    margin: auto;
+  }
+
+  ul li {
+    display: flex;
+    float: left;
+
+    &:not(:first-child) {
+      margin-left: -4em;
+      @media only screen and (max-width: 768px) {
+        margin-left: -2em;
+      }
+    }
+  }
+
+  .info {
+    text-align: center;
+    clear: both;
+
+    span {
+      display: block;
+      font-size: 1.2em;
+      color: white;
+      @media only screen and (max-width: 480px) {
+        font-size: 0.8em;
+      }
+    }
+  }
+}
+
+.control-bar {
+  height: auto;
+  width: 100vw;
+  position: absolute;
+  bottom: 0;
+  background-color: #51290f;
+  background-image: url("/assets/images/wood.jpg");
+  font-size: 1.4em;
+
+  .control-child {
+    padding: 1em;
+
+    @media only screen and (max-width: 578px) {
+      padding-top: 0.2em;
+      padding-bottom: 0.2em;
+    }
+  }
+
+  .stats {
+    text-align: center;
+    color: white;
+    margin: auto 0;
+  }
+}
