@@ -21,7 +21,7 @@
             <img class="playing-card" src="/assets/images/cards/5D.png" alt="Card">
           </li>
         </ul>
-        <div class="info">
+        <div class="info-stats">
           <span>Cards Value: 5</span>
           <span>Player 1</span>
         </div>
@@ -32,7 +32,7 @@
             <img class="playing-card" style="visibility: hidden" src="/assets/images/cards/5D.png" alt="Card">
           </li>
         </ul>
-        <div class="info">
+        <div class="info-stats">
           <span>Cards Value: 5</span>
           <span>Player 2</span>
         </div>
@@ -43,7 +43,7 @@
             <img class="playing-card" src="/assets/images/cards/5D.png" alt="Card">
           </li>
         </ul>
-        <div class="info">
+        <div class="info-stats">
           <span>Cards Value: 5</span>
           <span>Player 3</span>
         </div>

@@ -7,10 +7,10 @@
     </div>
     <div style="text-align: center">
       <h2>Name</h2>
-      <a class="btn btn-dark btn-lg" role="button">Rules</a>
+      <v-btn to="/rules" role="button">Rules</v-btn>
       <br>
       <br>
-      <router-link to="/game" class="btn btn-dark btn-lg" role="button">Start Game</router-link>
+      <v-btn to="/game" role="button">Start Game</v-btn>
     </div>
   </div>
 </template>
