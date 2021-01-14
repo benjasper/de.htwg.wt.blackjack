@@ -287,6 +287,7 @@ export default class Game extends Vue {
   }
 
   private updateUser() {
+    axios.defaults.headers.get['Access-Control-Allow-Origin'] = '*'
     axios.get('http://localhost:9000/user?' + getLoggedInPlayer().playerId).then(response => {
       const data = response.data
       if ('success' in data && data.success === false) {
