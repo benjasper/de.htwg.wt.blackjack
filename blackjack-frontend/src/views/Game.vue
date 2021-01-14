@@ -92,7 +92,7 @@
           </v-row>
         </v-col>
         <v-col class="stats control-child">
-          <span>Balance: 1000$</span>
+          <span>Balance: {{ playerBalance }}$</span>
         </v-col>
       </v-row>
     </div>
@@ -133,6 +133,7 @@ import Vue from 'vue'
 import PlayerComponent from '@/components/Player.vue'
 import CardComponent from '@/components/Card.vue'
 import Component from 'vue-class-component'
+import axios from 'axios'
 
 class Card {
   public cardKey = ''
@@ -181,6 +182,7 @@ export default class Game extends Vue {
   public dealerCardsValue = 0 as number
   public endDialog = false
   public endText = ''
+  public playerBalance = 0
 
   socket: WebSocket
 
@@ -188,6 +190,7 @@ export default class Game extends Vue {
     super()
 
     this.socket = this.initializeSocket()
+    this.updateUser()
   }
 
   private initializeSocket(): WebSocket {
@@ -281,6 +284,18 @@ export default class Game extends Vue {
 
         break
     }
+  }
+
+  private updateUser() {
+    axios.get('http://localhost:9000/user?' + getLoggedInPlayer().playerId).then(response => {
+      const data = response.data
+      if ('success' in data && data.success === false) {
+        this.error(data.msg)
+        return
+      }
+
+      this.playerBalance = data.balance
+    })
   }
 
   private finishGame(gamestates: any[]) {

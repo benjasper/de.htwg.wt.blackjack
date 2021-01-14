@@ -81,6 +81,17 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents,
       }
   }
 
+  def user(): Action[AnyContent] = Action.async {
+    implicit request: Request[AnyContent] =>
+      val player = request.getQueryString("player")
+      val r: WSRequest = ws.url("http://localhost:9001/player/" + player)
+      r.get().map {
+        json => Ok(json.json)
+      }.recover {
+        json => InternalServerError(json.getMessage)
+      }
+  }
+
   def rules(): Action[AnyContent] = Action {
     implicit request: Request[AnyContent] =>
       Ok(views.html.blackjack())
