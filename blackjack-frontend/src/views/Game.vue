@@ -202,8 +202,8 @@ export default class Game extends Vue {
     })
 
     socket.addEventListener('close', (event) => {
-      this.socket = this.initializeSocket()
       console.log(event)
+      this.socket = this.initializeSocket()
     })
 
     // Listen for messages
@@ -216,6 +216,9 @@ export default class Game extends Vue {
     console.log('Message from server ', event.data)
     const response = JSON.parse(event.data)
     switch (response.action) {
+      case 'MATCHMAKING':
+        console.log(response)
+        break
       case 'NEWGAME':
         this.dealerCards = []
         this.playerCardStacks.forEach((stack: Card[], index: number) => {
@@ -339,7 +342,7 @@ export default class Game extends Vue {
       Vue.set(this.playerCardStackValues, index, 0)
     })
     const request = {
-      action: 'newGame',
+      action: 'matchmaking',
       playerId: getLoggedInPlayer().playerId
     }
 

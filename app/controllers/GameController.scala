@@ -13,19 +13,27 @@ class GameController(ws: WSClient) extends Observable {
   implicit val actorSystem: ActorSystem = ActorSystem("gameExecutionContext")
   implicit val executionContext: ExecutionContextExecutor = actorSystem.dispatcher
 
-  def newGame(player: String): Unit = {
-    val request: WSRequest = ws.url("http://localhost:9001/game/start")
+  var players: List[Player] = List()
 
-    val json: JsValue = Json.obj(
-      "playerId" -> player,
-      "betValue" -> 100
-    )
+  def addPlayer(player: Player): GameController = {
+    players = players :+ player
+    this
+  }
 
-    request.put(json).map {
-      json =>
-        this.notifyObservers(player, json.json, "NEWGAME")
-    }.recover {
-      json => println(json.getMessage)
+  def newGame(): Unit = {
+    for (player <- players) {
+      val request: WSRequest = ws.url("http://localhost:9001/game/start")
+
+      val json: JsValue = Json.obj(
+        "playerId" -> player.id
+      )
+
+      request.put(json).map {
+        json =>
+          this.notifyObservers(player.id, json.json, "NEWGAME")
+      }.recover {
+        json => println(json.getMessage)
+      }
     }
   }
 

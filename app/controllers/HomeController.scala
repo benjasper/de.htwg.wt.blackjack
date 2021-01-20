@@ -14,6 +14,7 @@ import utils.{Observable, Observer}
 
 import scala.concurrent.duration.Duration
 import scala.concurrent.{Await, ExecutionContextExecutor, Future}
+import controllers.Assets.Asset
 
 /**
  * This controller creates an `Action` to handle HTTP requests to the
@@ -21,11 +22,12 @@ import scala.concurrent.{Await, ExecutionContextExecutor, Future}
  */
 @Singleton
 class HomeController @Inject()(val controllerComponents: ControllerComponents,
-                               ws: WSClient) extends BaseController with play.api.i18n.I18nSupport {
+                               ws: WSClient, assets: Assets) extends BaseController with play.api.i18n.I18nSupport {
   implicit val actorSystem: ActorSystem = ActorSystem("apiExecutionContext")
   implicit val executionContext: ExecutionContextExecutor = actorSystem.dispatcher
 
-  val gamecontroller = new GameController(ws)
+  var gamecontrollers = List[GameController]()
+  val matchmaking = new MatchmakingController(ws)
 
   val loginForm: Form[LoginData] = Form(
     mapping(
@@ -40,45 +42,15 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents,
    * will be called when the application receives a `GET` request with
    * a path of `/`.
    */
-  def index(): Action[AnyContent] = Action {
-    implicit request: Request[AnyContent] =>
-      Ok(views.html.menu("", ""))
+  def index: Action[AnyContent] = {
+
+    assets.at("/public", "index.html")
+
   }
 
-  def loginFormAction(): Action[AnyContent] = Action {
-    implicit request: Request[AnyContent] =>
-      Ok(views.html.login(loginForm))
-  }
+  def serveRootJsFiles(file: String): Action[AnyContent] = {
 
-  val loginPost: Action[LoginData] = Action.async(parse.form(loginForm)) { implicit request =>
-    val userData = request.body
-    val newUser = models.LoginData(userData.username)
-    val r: WSRequest = ws.url("http://localhost:9002/player")
-    val body: JsValue = Json.obj(
-      "name" -> newUser.username
-    )
-    r.withRequestTimeout(Duration("3s"))
-    r.post(body).map {
-      json =>
-        Redirect(routes.HomeController.menu().absoluteURL(), Map[String, Seq[String]](
-          "playerId" -> Seq((json.json \ "id").get.as[String]),
-          "name" -> Seq((json.json \ "name").get.as[String])))
-    }.recover {
-      json =>
-        printf(json.toString)
-        Redirect(routes.HomeController.loginFormAction())
-    }
-  }
-
-  def playingfield(): Action[AnyContent] = Action.async {
-    implicit request: Request[AnyContent] =>
-      val request: WSRequest = ws.url("http://localhost:9002/player/5fa3ba4f800df34886c43d15")
-      request.withRequestTimeout(Duration("3s"))
-      request.get().map {
-        json => Ok(views.html.playingfield(json.body))
-      }.recover {
-        json => InternalServerError(views.html.playingfield(json.getMessage))
-      }
+    assets.versioned("/public", file+".js")
   }
 
   def user(): Action[AnyContent] = Action.async {
@@ -90,23 +62,6 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents,
       }.recover {
         json => InternalServerError(json.getMessage)
       }
-  }
-
-  def rules(): Action[AnyContent] = Action {
-    implicit request: Request[AnyContent] =>
-      Ok(views.html.blackjack())
-  }
-
-  def menu(): Action[AnyContent] = Action {
-    implicit request: Request[AnyContent] =>
-      val playerId: String = request.getQueryString("playerId").getOrElse("")
-      val name: String = request.getQueryString("name").getOrElse("")
-      Ok(views.html.menu(playerId, name))
-  }
-
-  def blackjack(): Action[AnyContent] = Action {
-    implicit request: Request[AnyContent] =>
-      Ok(views.html.blackjack())
   }
 
   def socket = WebSocket.accept[String, String] { request =>
@@ -122,7 +77,6 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents,
   }
 
   class MyWebSocketActor(out: ActorRef) extends Actor with Observer {
-    gamecontroller.add(this)
 
     def receive: Receive = {
       case msg: String =>
@@ -131,12 +85,40 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents,
         val action = (json \ "action").get.as[String]
         val player = (json \ "playerId").get.as[String]
         action match {
-          case "newGame" =>
-            gamecontroller.newGame(player)
+          case "matchmaking" =>
+
+            matchmaking.matchmaking(player).map(json => {
+              val playerIndex = (json \ "playerIndex").get.as[Int]
+              if (playerIndex == 0) {
+                val gameController = new GameController(ws)
+                gamecontrollers = gamecontrollers :+ gameController
+                gameController.addPlayer(Player(player, "Player 0"))
+                gameController.add(this)
+                new StartGameTask(gameController)
+              } else {
+                val playerId = (json \ "players" \ 0).get.as[String]
+                val gameController = findGamecontrollerByPlayer(playerId).get
+                gameController.addPlayer(Player(player, s"Player $playerIndex"))
+                gameController.add(this)
+              }
+              out ! Json.obj(
+                "game" -> json,
+                "action" -> "MATCHMAKING").toString()
+            })
+
           case "gameHit" =>
-            gamecontroller.gameHit(player)
+            val gameController = findGamecontrollerByPlayer(player)
+            if (gameController.isEmpty) {
+              println("Could not find GameController")
+            }
+            gameController.get.gameHit(player)
           case "gameStand" =>
-            gamecontroller.gameStand(player)
+            val gameController = findGamecontrollerByPlayer(player)
+            if (gameController.isEmpty) {
+              println("Could not find GameController")
+            }
+
+            gameController.get.gameStand(player)
           case _ =>
             out ! Json.obj("message" -> "Wrong action").toString()
         }
@@ -148,5 +130,9 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents,
         "game" -> message,
         "action" -> action).toString()
     }
+  }
+
+  def findGamecontrollerByPlayer(playerId: String): Option[GameController] = {
+    gamecontrollers.find(controller => controller.players.exists(player => player.id == playerId))
   }
 }
