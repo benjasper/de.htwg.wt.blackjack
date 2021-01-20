@@ -92,18 +92,21 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents,
               if (playerIndex == 0) {
                 val gameController = new GameController(ws)
                 gamecontrollers = gamecontrollers :+ gameController
-                gameController.addPlayer(Player(player, "Player 0"))
                 gameController.add(this)
+                gameController.addPlayer(Player(player, "Player 0", playerIndex))
                 new StartGameTask(gameController)
               } else {
                 val playerId = (json \ "players" \ 0).get.as[String]
                 val gameController = findGamecontrollerByPlayer(playerId).get
-                gameController.addPlayer(Player(player, s"Player $playerIndex"))
                 gameController.add(this)
+                gameController.addPlayer(Player(player, s"Player $playerIndex", playerIndex))
               }
+              println(gamecontrollers.toString())
               out ! Json.obj(
                 "game" -> json,
                 "action" -> "MATCHMAKING").toString()
+            }).recover(json => {
+              println(json.getMessage)
             })
 
           case "gameHit" =>
@@ -119,6 +122,11 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents,
             }
 
             gameController.get.gameStand(player)
+          case "ping" =>
+            out ! Json.obj(
+              "player" -> player,
+              "game" -> "pong",
+              "action" -> "PONG").toString()
           case _ =>
             out ! Json.obj("message" -> "Wrong action").toString()
         }

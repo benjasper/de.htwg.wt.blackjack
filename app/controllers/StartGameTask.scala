@@ -12,7 +12,7 @@ class StartGameTask(gameController: GameController) {
   implicit val executionContext: ExecutionContextExecutor = actorSystem.dispatcher
 
   actorSystem.scheduler.scheduleOnce(delay = 29.seconds) {
-    print(s"Starting new round with ${gameController.players.toString()}")
+    println(s"Starting new round with ${gameController.players.toString()}")
     gameController.newGame()
   }
 }

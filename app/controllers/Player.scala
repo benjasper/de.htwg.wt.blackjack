@@ -1,3 +1,3 @@
 package controllers
 
-case class Player(id: String, name: String)
+case class Player(id: String, name: String, playerIndex: Int)

@@ -14,9 +14,13 @@ class GameController(ws: WSClient) extends Observable {
   implicit val executionContext: ExecutionContextExecutor = actorSystem.dispatcher
 
   var players: List[Player] = List()
+  var ended = false
 
   def addPlayer(player: Player): GameController = {
     players = players :+ player
+    this.notifyObservers(player.id, Json.obj(
+      "name" -> player.name
+    ), "JOIN")
     this
   }
 
@@ -31,6 +35,7 @@ class GameController(ws: WSClient) extends Observable {
       request.put(json).map {
         json =>
           this.notifyObservers(player.id, json.json, "NEWGAME")
+          checkForRevealed(json.json: JsValue)
       }.recover {
         json => println(json.getMessage)
       }
@@ -43,7 +48,9 @@ class GameController(ws: WSClient) extends Observable {
       "playerId" -> player
     )
     request.put(body).map {
-      json => this.notifyObservers(player, json.json, "GAMEHIT")
+      json =>
+        this.notifyObservers(player, json.json, "GAMEHIT")
+        checkForRevealed(json.json: JsValue)
     }.recover {
       json => println(json.getMessage)
     }
@@ -55,9 +62,20 @@ class GameController(ws: WSClient) extends Observable {
       "playerId" -> player
     )
     request.put(body).map {
-      json => this.notifyObservers(player, json.json, "GAMESTAND")
+      json =>
+        this.notifyObservers(player, json.json, "GAMESTAND")
+        checkForRevealed(json.json: JsValue)
     }.recover {
       json => println(json.getMessage)
+    }
+  }
+
+  def checkForRevealed(json: JsValue): Unit = {
+    val revealed = (json \ "revealed").get.as[Boolean]
+    if (revealed) {
+      this.subscribers = Vector()
+      this.players = List()
+      ended = true
     }
   }
 }

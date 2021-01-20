@@ -87,7 +87,8 @@
           <v-row class="m-auto">
             <div class="m-auto">
               <v-btn @click="hitGame()" type="button" id="hitGame" :disabled="!actionsEnabled">HIT</v-btn>
-              <v-btn class="ml-1" @click="gameStand()" type="button" id="standGame" :disabled="!actionsEnabled">STAND</v-btn>
+              <v-btn class="ml-1" @click="gameStand()" type="button" id="standGame" :disabled="!actionsEnabled">STAND
+              </v-btn>
             </div>
           </v-row>
         </v-col>
@@ -177,7 +178,8 @@ export default class Game extends Vue {
   public actionsEnabled = false
   public playerCardStacks = [[], [], []] as Card[][]
   public playerCardStackValues = [0, 0, 0] as number[]
-  public playerNames = ['', '', ''] as string[]
+  public playerNames = [] as string[]
+  public playerIds = [] as string[]
   public dealerCards: Card[] = []
   public dealerCardsValue = 0 as number
   public endDialog = false
@@ -198,12 +200,17 @@ export default class Game extends Vue {
 
     // Connection opened
     socket.addEventListener('open', (event) => {
+      window.setInterval(() => {
+        socket.send(JSON.stringify(
+          {
+            action: 'ping', playerId: getLoggedInPlayer().playerId
+          }))
+      }, 5000)
       console.log(event)
     })
 
-    socket.addEventListener('close', (event) => {
-      console.log(event)
-      this.socket = this.initializeSocket()
+    socket.addEventListener('close', () => {
+      alert('Connection closed!')
     })
 
     // Listen for messages
@@ -217,16 +224,20 @@ export default class Game extends Vue {
     const response = JSON.parse(event.data)
     switch (response.action) {
       case 'MATCHMAKING':
+        this.playerNumber = response.game.playerIndex
+        if (response.game.playerIndex !== 0) {
+          response.game.players.forEach((id: string, index: number) => {
+            if (index === response.game.players.length - 1) {
+              return
+            }
+
+            this.playerIds.push(id)
+            this.playerNames.push('')
+          })
+        }
         console.log(response)
         break
       case 'NEWGAME':
-        this.dealerCards = []
-        this.playerCardStacks.forEach((stack: Card[], index: number) => {
-          Vue.set(this.playerCardStacks, index, [])
-        })
-
-        this.gameInProgress = true
-
         this.actionsEnabled = true
 
         if ('success' in response.game && response.game.success === false) {
@@ -257,7 +268,7 @@ export default class Game extends Vue {
         console.log(response.game)
         this.playerCardStackValues[this.playerNumber] = response.game.playerCardsValue
 
-        if (response.game.gameStates[response.game.gameStates.length - 1].gameState === 'WAITING_FOR_INPUT') {
+        if (response.game.gameStates[this.playerNumber][response.game.gameStates[this.playerNumber].length - 1].gameState === 'WAITING_FOR_INPUT') {
           // TODO: Allow hit stand
 
           return
@@ -268,7 +279,7 @@ export default class Game extends Vue {
         this.gameInProgress = false
         this.dealerCardsValue = response.game.dealerCardsValue
 
-        this.finishGame(response.game.gameStates)
+        this.finishGame(response.game.gameStates[this.playerNumber])
 
         break
       case 'GAMESTAND':
@@ -283,9 +294,18 @@ export default class Game extends Vue {
         Vue.set(this.playerCardStackValues, this.playerNumber, response.game.playerCardsValue)
 
         this.dealerCardsValue = response.game.dealerCardsValue
-        this.finishGame(response.game.gameStates)
+        this.finishGame(response.game.gameStates[this.playerNumber])
 
         break
+      case 'JOIN':
+        this.playerNames.push(response.game.name)
+        this.playerIds.push(response.game.id)
+
+        break
+      case 'PONG':
+        break
+      default:
+        console.error(response)
     }
   }
 
@@ -338,6 +358,15 @@ export default class Game extends Vue {
   public newGame() {
     this.endDialog = false
     this.dealerCardsValue = 0
+    this.playerNames = []
+    this.playerIds = []
+    this.dealerCards = []
+    this.playerCardStacks.forEach((stack: Card[], index: number) => {
+      Vue.set(this.playerCardStacks, index, [])
+    })
+
+    this.gameInProgress = true
+
     this.playerCardStackValues.forEach((value, index) => {
       Vue.set(this.playerCardStackValues, index, 0)
     })
