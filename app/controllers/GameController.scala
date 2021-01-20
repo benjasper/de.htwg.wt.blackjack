@@ -15,6 +15,7 @@ class GameController(ws: WSClient) extends Observable {
 
   var players: List[Player] = List()
   var ended = false
+  var startTask: Option[StartGameTask] = None
 
   def addPlayer(player: Player): GameController = {
     players = players :+ player
@@ -22,6 +23,11 @@ class GameController(ws: WSClient) extends Observable {
       "name" -> player.name
     ), "JOIN")
     this
+  }
+
+  def forceStart(): Unit = {
+    startTask.get.task.cancel()
+    newGame()
   }
 
   def newGame(): Unit = {

@@ -1,6 +1,6 @@
 package controllers
 
-import akka.actor.ActorSystem
+import akka.actor.{ActorSystem, Cancellable}
 
 import scala.concurrent.{ExecutionContext, ExecutionContextExecutor}
 import scala.concurrent.duration._
@@ -11,7 +11,7 @@ class StartGameTask(gameController: GameController) {
   implicit val actorSystem: ActorSystem = ActorSystem(s"runGame${rand_number}ExecutionContext")
   implicit val executionContext: ExecutionContextExecutor = actorSystem.dispatcher
 
-  actorSystem.scheduler.scheduleOnce(delay = 29.seconds) {
+  val task: Cancellable = actorSystem.scheduler.scheduleOnce(delay = 29.seconds) {
     println(s"Starting new round with ${gameController.players.toString()}")
     gameController.newGame()
   }

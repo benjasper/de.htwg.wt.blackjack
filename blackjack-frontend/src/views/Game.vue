@@ -44,7 +44,7 @@
                   v-bind="attrs"
                   v-on="on"
                   class="m-auto ml-1"
-                  :disabled="gameInProgress"
+                  :disabled="gameInProgress || !connected"
                 >
                   NEW GAME
                 </v-btn>
@@ -126,6 +126,36 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
+    <v-dialog
+      v-model="matchmakingDialog"
+      persistent
+      max-width="290"
+    >
+      <v-card>
+        <v-card-title class="headline">
+          Matchmaking
+        </v-card-title>
+        <v-card-text>Waiting for other players</v-card-text>
+        <div class="text-center">
+          <v-progress-circular
+            :size="70"
+            :width="7"
+            color="purple"
+            indeterminate
+          ></v-progress-circular>
+        </div>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn
+            color="green darken-1"
+            text
+            @click="forceStart()"
+          >
+            Start now
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </div>
 </template>
 
@@ -185,6 +215,8 @@ export default class Game extends Vue {
   public endDialog = false
   public endText = ''
   public playerBalance = 0
+  public matchmakingDialog = false
+  public connected = false
 
   socket: WebSocket
 
@@ -206,10 +238,12 @@ export default class Game extends Vue {
             action: 'ping', playerId: getLoggedInPlayer().playerId
           }))
       }, 5000)
+      this.connected = true
       console.log(event)
     })
 
     socket.addEventListener('close', () => {
+      this.connected = false
       alert('Connection closed!')
     })
 
@@ -224,6 +258,7 @@ export default class Game extends Vue {
     const response = JSON.parse(event.data)
     switch (response.action) {
       case 'MATCHMAKING':
+        this.matchmakingDialog = true
         this.playerNumber = response.game.playerIndex
         if (response.game.playerIndex !== 0) {
           response.game.players.forEach((id: string, index: number) => {
@@ -238,6 +273,7 @@ export default class Game extends Vue {
         console.log(response)
         break
       case 'NEWGAME':
+        this.matchmakingDialog = false
         this.actionsEnabled = true
 
         if ('success' in response.game && response.game.success === false) {
@@ -256,6 +292,11 @@ export default class Game extends Vue {
 
         Vue.set(this.playerCardStackValues, this.playerNumber, response.game.playerCardsValue)
         Vue.set(this.playerNames, this.playerNumber, getLoggedInPlayer().name)
+
+        if (response.game.revealed === true) {
+          this.dealerCardsValue = response.game.dealerCardsValue
+          this.finishGame(response.game.gameStates[this.playerNumber])
+        }
 
         break
       case 'GAMEHIT':
@@ -341,6 +382,7 @@ export default class Game extends Vue {
           break
       }
     })
+    this.updateUser()
     this.endDialog = true
   }
 
@@ -372,6 +414,15 @@ export default class Game extends Vue {
     })
     const request = {
       action: 'matchmaking',
+      playerId: getLoggedInPlayer().playerId
+    }
+
+    this.socket.send(JSON.stringify(request))
+  }
+
+  public forceStart() {
+    const request = {
+      action: 'forcestart',
       playerId: getLoggedInPlayer().playerId
     }
 

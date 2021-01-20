@@ -94,7 +94,7 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents,
                 gamecontrollers = gamecontrollers :+ gameController
                 gameController.add(this)
                 gameController.addPlayer(Player(player, "Player 0", playerIndex))
-                new StartGameTask(gameController)
+                gameController.startTask = Some(new StartGameTask(gameController))
               } else {
                 val playerId = (json \ "players" \ 0).get.as[String]
                 val gameController = findGamecontrollerByPlayer(playerId).get
@@ -127,9 +127,17 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents,
               "player" -> player,
               "game" -> "pong",
               "action" -> "PONG").toString()
+          case "forcestart" =>
+            val gameController = findGamecontrollerByPlayer(player)
+            if (gameController.isEmpty) {
+              println("Could not find GameController")
+            }
+
+            gameController.get.forceStart()
           case _ =>
             out ! Json.obj("message" -> "Wrong action").toString()
         }
+        gamecontrollers = gamecontrollers.filterNot(g => g.ended || g.subscribers.isEmpty)
     }
 
     override def update(playerId: String, message: JsValue, action: String): Unit = {
