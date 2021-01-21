@@ -78,13 +78,12 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents,
   }
 
   class MyWebSocketActor(out: ActorRef) extends Actor with Observer {
-    var playerId = ""
 
     def receive: Receive = {
       case msg: String =>
         val json = Json.parse(msg)
         val action = (json \ "action").get.as[String]
-        playerId = (json \ "playerId").get.as[String]
+        val playerId = (json \ "playerId").get.as[String]
         action match {
           case "matchmaking" =>
             println(msg)
@@ -95,22 +94,27 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents,
                 val gameController = new GameController(ws)
                 gamecontrollers = gamecontrollers :+ gameController
                 gameController.add(this)
-                gameController.addPlayer(Player(playerId, "Player 0", playerIndex))
+                gameController.addPlayer(Player(playerId, "Player 0", playerIndex, out))
+                out ! Json.obj(
+                  "player"-> playerId,
+                  "game" -> json,
+                  "action" -> "MATCHMAKING").toString()
                 gameController.startTask = Some(new StartGameTask(gameController))
               } else {
-                val playerId = (json \ "players" \ 0).get.as[String]
-                val gameController = findGamecontrollerByPlayer(playerId).get
+                val playerReference = (json \ "players" \ 0).get.as[String]
+                val gameController = findGamecontrollerByPlayer(playerReference).get
+                out ! Json.obj(
+                  "player"-> playerId,
+                  "game" -> json,
+                  "action" -> "MATCHMAKING").toString()
                 gameController.add(this)
-                gameController.addPlayer(Player(playerId, s"Player $playerIndex", playerIndex))
+                gameController.addPlayer(Player(playerId, s"Player $playerIndex", playerIndex, out))
                 if (gameController.players.size > 2) {
                   gameController.forceStart()
                 }
               }
               println(gamecontrollers.toString())
-              out ! Json.obj(
-                "player"-> playerId,
-                "game" -> json,
-                "action" -> "MATCHMAKING").toString()
+
             }).recover(json => {
               println(json.getMessage)
             })
@@ -149,22 +153,23 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents,
     }
 
     override def postStop(): Unit = {
-      val gameController = findGamecontrollerByPlayer(playerId)
+      val gameController = gamecontrollers.find(g => g.players.exists(p => p.actor == out))
       if (gameController.isEmpty) {
         println("Could not find GameController")
         return
       }
-      gameController.get.removePlayer(playerId)
+      gameController.get.removePlayer(out)
       gameController.get.remove(this)
       gamecontrollers = gamecontrollers.filterNot(g => g.ended || g.subscribers.isEmpty)
       super.postStop()
     }
 
-    override def update(playerId: String, message: JsValue, action: String): Unit = {
+    override def update(playerId: String, message: JsValue, action: String, nextTurn: String): Unit = {
       out ! Json.obj(
         "player" -> playerId,
         "game" -> message,
-        "action" -> action).toString()
+        "action" -> action,
+      "nextTurn" -> nextTurn).toString()
     }
   }
 

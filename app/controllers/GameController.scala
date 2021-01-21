@@ -1,12 +1,13 @@
 package controllers
 
-import akka.actor.ActorSystem
-import play.api.libs.json.{JsValue, Json}
+import akka.actor.{ActorRef, ActorSystem}
+import play.api.libs.json.{JsArray, JsObject, JsValue, Json}
 import play.api.libs.ws
 import play.api.libs.ws.{WSClient, WSRequest}
 import utils.Observable
 
-import scala.concurrent.ExecutionContextExecutor
+import scala.concurrent.duration.Duration
+import scala.concurrent.{Await, ExecutionContextExecutor, Future}
 
 class GameController(ws: WSClient) extends Observable {
 
@@ -14,19 +15,37 @@ class GameController(ws: WSClient) extends Observable {
   implicit val executionContext: ExecutionContextExecutor = actorSystem.dispatcher
 
   var players: List[Player] = List()
+  var turns: Vector[Player] = Vector()
   var ended = false
   var startTask: Option[StartGameTask] = None
 
   def addPlayer(player: Player): GameController = {
     players = players :+ player
+    turns = turns :+ player
     this.notifyObservers(player.id, Json.obj(
       "name" -> player.name
-    ), "JOIN")
+    ), "JOIN", "")
     this
   }
 
-  def removePlayer(playerId: String): GameController = {
-    players = players.filterNot(p => p.id == playerId)
+  private def nextPlayer(): Option[Player] = {
+    val playerOption = turns.headOption
+    if (playerOption.isEmpty) {
+      return None
+    }
+
+    val player = playerOption.get
+
+    Some(player)
+  }
+
+  private def dropFromTurns(player: Player): Player = {
+    turns = turns.filterNot(p => p.id == player.id)
+    player
+  }
+
+  def removePlayer(out: ActorRef): GameController = {
+    players = players.filterNot(p => p.actor == out)
 
     this
   }
@@ -36,21 +55,48 @@ class GameController(ws: WSClient) extends Observable {
     newGame()
   }
 
+  private def dropPlayerIfEnded(playerIndex: Int, response: JsValue): Unit = {
+    val gamestates = (response \ "gameStates" \ playerIndex).get.as[List[JsObject]]
+    if (gamestates.exists(gamestate => ((gamestate \ "gameState")).get.as[String] == "DONE")) {
+      dropFromTurns(players(playerIndex))
+    }
+  }
+
   def newGame(): Unit = {
-    for (player <- players) {
+    var responses: List[JsValue] = List()
+    var futures: List[Future[Unit]] = List()
+
+    for ((player, index) <- players.zipWithIndex) {
       val request: WSRequest = ws.url("http://localhost:9001/game/start")
 
       val json: JsValue = Json.obj(
         "playerId" -> player.id
       )
 
-      request.put(json).map {
+      val future = request.put(json).map {
         json =>
-          this.notifyObservers(player.id, json.json, "NEWGAME")
-          checkForRevealed(json.json: JsValue)
+          dropPlayerIfEnded(index, json.json)
+
+          responses = responses :+ json.json
       }.recover {
         json => println(json.getMessage)
       }
+      futures = futures :+ future
+    }
+
+    for (future <- futures) {
+      Await.result(future, Duration("10s"))
+    }
+
+    var nextTurnId = ""
+    val nextTurnOption = nextPlayer()
+    if (nextTurnOption.isDefined) {
+      nextTurnId = nextTurnOption.get.id
+    }
+
+    for ((response, index) <- responses.zipWithIndex) {
+      this.notifyObservers(players(index).id, response, "NEWGAME", nextTurnId)
+      checkForRevealed(response: JsValue)
     }
   }
 
@@ -59,13 +105,24 @@ class GameController(ws: WSClient) extends Observable {
     val body: JsValue = Json.obj(
       "playerId" -> player
     )
-    request.put(body).map {
+    var response: Option[JsValue] = None
+    val future = request.put(body).map {
       json =>
-        this.notifyObservers(player, json.json, "GAMEHIT")
+        response = Some(json.json)
+        dropPlayerIfEnded(players.indexWhere(p => p.id == player), json.json)
         checkForRevealed(json.json: JsValue)
     }.recover {
       json => println(json.getMessage)
     }
+
+    Await.result(future, Duration("10s"))
+
+    var nextTurnId = ""
+    val nextTurnOption = nextPlayer()
+    if (nextTurnOption.isDefined) {
+      nextTurnId = nextTurnOption.get.id
+    }
+    this.notifyObservers(player, response.get, "GAMEHIT", nextTurnId)
   }
 
   def gameStand(player: String): Unit = {
@@ -73,20 +130,30 @@ class GameController(ws: WSClient) extends Observable {
     val body: JsValue = Json.obj(
       "playerId" -> player
     )
-    request.put(body).map {
+    var response: Option[JsValue] = None
+    val future = request.put(body).map {
       json =>
-        this.notifyObservers(player, json.json, "GAMESTAND")
+        response = Some(json.json)
+        dropPlayerIfEnded(players.indexWhere(p => p.id == player), json.json)
         checkForRevealed(json.json: JsValue)
     }.recover {
       json => println(json.getMessage)
     }
+
+    Await.result(future, Duration("10s"))
+
+    var nextTurnId = ""
+    val nextTurnOption = nextPlayer()
+    if (nextTurnOption.isDefined) {
+      nextTurnId = nextTurnOption.get.id
+    }
+
+    this.notifyObservers(player, response.get, "GAMESTAND", nextTurnId)
   }
 
   def checkForRevealed(json: JsValue): Unit = {
     val revealed = (json \ "revealed").get.as[Boolean]
     if (revealed) {
-      this.subscribers = Vector()
-      this.players = List()
       ended = true
     }
   }

@@ -1,3 +1,5 @@
 package controllers
 
-case class Player(id: String, name: String, playerIndex: Int)
+import akka.actor.ActorRef
+
+case class Player(id: String, name: String, playerIndex: Int, actor: ActorRef)

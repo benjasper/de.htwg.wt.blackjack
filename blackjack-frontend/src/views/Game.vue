@@ -22,9 +22,9 @@
 			</section>
 
 			<section class="players">
-				<div v-for="(name, index) in playerNames" :key="'player-' + name + '-' + index">
-					<PlayerComponent :name="name" :number="index" :cards="playerCardStacks[index]"
-									 :cardsValue="playerCardStackValues[index]"></PlayerComponent>
+				<div v-for="(player, index) in players" :key="'player-' + player.name + '-' + index">
+					<PlayerComponent :name="player.name" :number="index" :cards="player.hand"
+									 :cardsValue="player.handValue"></PlayerComponent>
 				</div>
 			</section>
 		</div>
@@ -179,11 +179,13 @@ class Card {
 }
 
 class Player {
-	playerId = ''
-	name = ''
+	public id = ''
+	public name = ''
+	public hand = [] as Card[]
+	public handValue = 0 as number
 
 	constructor(playerId: string, name: string) {
-		this.playerId = playerId
+		this.id = playerId
 		this.name = name
 	}
 }
@@ -208,10 +210,7 @@ export default class Game extends Vue {
 	public dialog = false
 	public gameInProgress = false
 	public actionsEnabled = false
-	public playerCardStacks = [] as Card[][]
-	public playerCardStackValues = [] as number[]
-	public playerNames = [] as string[]
-	public playerIds = [] as string[]
+	public players: Player[] = []
 	public dealerCards: Card[] = []
 	public dealerCardsValue = 0 as number
 	public endDialog = false
@@ -237,7 +236,7 @@ export default class Game extends Vue {
 			window.setInterval(() => {
 				socket.send(JSON.stringify(
 					{
-						action: 'ping', playerId: getLoggedInPlayer().playerId
+						action: 'ping', playerId: getLoggedInPlayer().id
 					}))
 			}, 5000)
 			this.connected = true
@@ -272,11 +271,7 @@ export default class Game extends Vue {
 				this.standAction(response)
 				break
 			case 'JOIN':
-				this.playerNames.push(response.game.name)
-				this.playerCardStacks.push([])
-				this.playerCardStackValues.push(0)
-				this.playerIds.push(response.player)
-
+				this.players.push(new Player(response.player, response.game.name))
 				break
 			case 'PONG':
 				break
@@ -294,8 +289,7 @@ export default class Game extends Vue {
 					return
 				}
 
-				this.playerIds.push(id)
-				this.playerNames.push('')
+				this.players.push(new Player(id, ''))
 			})
 		}
 	}
@@ -310,32 +304,36 @@ export default class Game extends Vue {
 		let playerIndex = this.playerNumber
 		let isWatching = false
 
-		if (response.player !== getLoggedInPlayer().playerId) {
-			playerIndex = this.playerIds.findIndex(id => id === response.playerId)
+		if (response.player !== getLoggedInPlayer().id) {
+			playerIndex = this.players.findIndex(player => player.id === response.player)
 			console.log(playerIndex)
 			isWatching = true
 		}
 
 		this.matchmakingDialog = false
-		this.actionsEnabled = true
+		if (response.nextTurn === getLoggedInPlayer().id) {
+			this.actionsEnabled = true
+		}
 
 		if (!isWatching) {
 			this.dealerCards.push(new Card('5H', true))
 		}
 
 		response.game.playerCards.forEach((card: any) => {
-			this.playerCardStacks[playerIndex].push(new Card(card.card))
-			Vue.set(this.playerCardStacks, playerIndex, this.playerCardStacks[playerIndex])
+			this.players[playerIndex].hand.push(new Card(card.card))
+
+			Vue.set(this.players, playerIndex, this.players[playerIndex])
 		})
 
 		if (!isWatching) {
 			this.dealerCards.push(new Card('5H', true))
 		}
 
-		Vue.set(this.playerCardStackValues, playerIndex, response.game.playerCardsValue)
-		Vue.set(this.playerNames, playerIndex, getLoggedInPlayer().name)
+		this.players[playerIndex].handValue = response.game.playerCardsValue
+		this.players[playerIndex].name = getLoggedInPlayer().name
+		Vue.set(this.players, playerIndex, this.players[playerIndex])
 
-		if (response.game.revealed === true) {
+		if (response.nextTurn === '') {
 			this.dealerCardsValue = response.game.dealerCardsValue
 			this.finishGame(response.game.gameStates[playerIndex])
 		}
@@ -349,13 +347,18 @@ export default class Game extends Vue {
 
 		let playerIndex = this.playerNumber
 
-		if (response.player !== getLoggedInPlayer().playerId) {
-			playerIndex = this.playerIds.findIndex(id => id === response.playerId)
+		if (response.player !== getLoggedInPlayer().id) {
+			playerIndex = this.players.findIndex(player => player.id === response.player)
 		}
 
-		this.playerCardStacks[playerIndex].push(new Card(response.game.hitCard))
+		this.players[playerIndex].hand.push(new Card(response.game.hitCard))
 		console.log(response.game)
-		this.playerCardStackValues[playerIndex] = response.game.playerCardsValue
+		this.players[playerIndex].handValue = response.game.playerCardsValue
+		Vue.set(this.players, playerIndex, this.players[playerIndex])
+
+		if (response.nextTurn === getLoggedInPlayer().id) {
+			this.actionsEnabled = true
+		}
 
 		if (response.game.gameStates[playerIndex][response.game.gameStates[playerIndex].length - 1].gameState === 'WAITING_FOR_INPUT') {
 			// TODO: Allow hit stand
@@ -363,12 +366,14 @@ export default class Game extends Vue {
 			return
 		}
 
-		this.actionsEnabled = false
-		this.revealDealerCards(response.game.dealerCards)
-		this.gameInProgress = false
-		this.dealerCardsValue = response.game.dealerCardsValue
+		if (response.nextTurn === '') {
+			this.actionsEnabled = false
+			this.revealDealerCards(response.game.dealerCards)
+			this.gameInProgress = false
+			this.dealerCardsValue = response.game.dealerCardsValue
 
-		this.finishGame(response.game.gameStates[playerIndex])
+			this.finishGame(response.game.gameStates[playerIndex])
+		}
 	}
 
 	private standAction(response: any) {
@@ -379,22 +384,30 @@ export default class Game extends Vue {
 
 		let playerIndex = this.playerNumber
 
-		if (response.player !== getLoggedInPlayer().playerId) {
-			playerIndex = this.playerIds.findIndex(id => id === response.playerId)
+		if (response.player !== getLoggedInPlayer().id) {
+			playerIndex = this.players.findIndex(player => player.id === response.player)
+			this.actionsEnabled = false
 		}
 
-		this.actionsEnabled = false
-		this.revealDealerCards(response.game.dealerCards)
-		this.gameInProgress = false
-		Vue.set(this.playerCardStackValues, playerIndex, response.game.playerCardsValue)
+		if (response.nextTurn === getLoggedInPlayer().id) {
+			this.actionsEnabled = true
+			return
+		}
 
-		this.dealerCardsValue = response.game.dealerCardsValue
-		this.finishGame(response.game.gameStates[playerIndex])
+		if (response.nextTurn === '') {
+			this.revealDealerCards(response.game.dealerCards)
+			this.gameInProgress = false
+			this.players[playerIndex].handValue = response.game.playerCardsValue
+			Vue.set(this.players, playerIndex, this.players[playerIndex])
+
+			this.dealerCardsValue = response.game.dealerCardsValue
+			this.finishGame(response.game.gameStates[playerIndex])
+		}
 	}
 
 	private updateUser() {
 		axios.defaults.headers.get['Access-Control-Allow-Origin'] = '*'
-		axios.get('http://localhost:9000/user?player=' + getLoggedInPlayer().playerId).then(response => {
+		axios.get('http://localhost:9000/user?player=' + getLoggedInPlayer().id).then(response => {
 			const data = response.data
 			if ('success' in data && data.success === false) {
 				this.error(data.msg)
@@ -406,7 +419,7 @@ export default class Game extends Vue {
 	}
 
 	private finishGame(gamestates: any[]) {
-		const playerName = this.playerNames[this.playerNumber]
+		const playerName = this.players[this.playerNumber].name
 		gamestates.forEach(gamestate => {
 			console.log(gamestate)
 			switch (gamestate.gameState) {
@@ -442,21 +455,16 @@ export default class Game extends Vue {
 	public newGame() {
 		this.endDialog = false
 		this.dealerCardsValue = 0
-		this.playerNames = []
-		this.playerIds = []
+		this.players = []
 		this.dealerCards = []
-		this.playerCardStacks.forEach((stack: Card[], index: number) => {
-			Vue.set(this.playerCardStacks, index, [])
-		})
 
 		this.gameInProgress = true
 
-		this.playerCardStackValues.forEach((value, index) => {
-			Vue.set(this.playerCardStackValues, index, 0)
-		})
+		this.actionsEnabled = false
+
 		const request = {
 			action: 'matchmaking',
-			playerId: getLoggedInPlayer().playerId
+			playerId: getLoggedInPlayer().id
 		}
 
 		this.socket.send(JSON.stringify(request))
@@ -465,7 +473,7 @@ export default class Game extends Vue {
 	public forceStart() {
 		const request = {
 			action: 'forcestart',
-			playerId: getLoggedInPlayer().playerId
+			playerId: getLoggedInPlayer().id
 		}
 
 		this.socket.send(JSON.stringify(request))
@@ -474,18 +482,20 @@ export default class Game extends Vue {
 	public hitGame() {
 		const request = {
 			action: 'gameHit',
-			playerId: getLoggedInPlayer().playerId
+			playerId: getLoggedInPlayer().id
 		}
 
+		this.actionsEnabled = false
 		this.socket.send(JSON.stringify(request))
 	}
 
 	public gameStand() {
 		const request = {
 			action: 'gameStand',
-			playerId: getLoggedInPlayer().playerId
+			playerId: getLoggedInPlayer().id
 		}
 
+		this.actionsEnabled = false
 		this.socket.send(JSON.stringify(request))
 	}
 }
