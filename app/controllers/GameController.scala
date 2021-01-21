@@ -25,6 +25,12 @@ class GameController(ws: WSClient) extends Observable {
     this
   }
 
+  def removePlayer(playerId: String): GameController = {
+    players = players.filterNot(p => p.id == playerId)
+
+    this
+  }
+
   def forceStart(): Unit = {
     startTask.get.task.cancel()
     newGame()

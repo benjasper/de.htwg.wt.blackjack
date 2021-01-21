@@ -16,6 +16,9 @@ module.exports = {
     'no-debugger': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
     'space-before-function-paren': 'off',
     '@typescript-eslint/no-explicit-any': 'off',
-    'object-curly-spacing': 'off'
+    'object-curly-spacing': 'off',
+    'no-tabs': 'off',
+    'indent': 'off',
+    'no-mixed-spaces-and-tabs': 'off'
   }
 }

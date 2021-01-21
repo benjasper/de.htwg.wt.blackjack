@@ -4,18 +4,18 @@
 # ~~~~
 
 # An example controller showing a sample home page
-GET         /               controllers.HomeController.index
-GET         /index.html               controllers.HomeController.index
+GET        /                    controllers.HomeController.index
+GET        /index.html          controllers.HomeController.index
 
 + nocsrf
-GET         /user                     controllers.HomeController.user()
+GET        /user                controllers.HomeController.user()
 
-GET         /websocket                controllers.HomeController.socket
+GET        /websocket           controllers.HomeController.socket
 
 # Map static resources from the /public folder
-GET     /css/*file                  controllers.Assets.versioned(path="/public/css", file: Asset)
-GET     /images/*file               controllers.Assets.versioned(path="/public/images", file: Asset)
-GET     /js/*file                   controllers.Assets.versioned(path="/public/js", file: Asset)
-GET     /*file                      controllers.Assets.versioned(path="/public", file: Asset)
+GET        /css/*file           controllers.Assets.versioned(path="/public/css", file: Asset)
+GET        /images/*file        controllers.Assets.versioned(path="/public/images", file: Asset)
+GET        /js/*file            controllers.Assets.versioned(path="/public/js", file: Asset)
+GET        /*file               controllers.Assets.versioned(path="/public", file: Asset)
 
-GET     /*file.js                   controllers.HomeController.serveRootJsFiles(file: String)
+GET        /*file.js            controllers.HomeController.serveRootJsFiles(file: String)
