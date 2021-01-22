@@ -150,6 +150,8 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents,
           case _ =>
             out ! Json.obj("message" -> "Wrong action").toString()
         }
+
+        gamecontrollers = gamecontrollers.filterNot(g => g.players.isEmpty)
     }
 
     override def postStop(): Unit = {

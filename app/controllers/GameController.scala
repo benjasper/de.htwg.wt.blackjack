@@ -82,6 +82,10 @@ class GameController(ws: WSClient) extends Observable {
         json => println(json.getMessage)
       }
       futures = futures :+ future
+
+      if (index != players.size - 1) {
+        Thread.sleep(500)
+      }
     }
 
     for (future <- futures) {
@@ -110,7 +114,6 @@ class GameController(ws: WSClient) extends Observable {
       json =>
         response = Some(json.json)
         dropPlayerIfEnded(players.indexWhere(p => p.id == player), json.json)
-        checkForRevealed(json.json: JsValue)
     }.recover {
       json => println(json.getMessage)
     }
@@ -123,6 +126,7 @@ class GameController(ws: WSClient) extends Observable {
       nextTurnId = nextTurnOption.get.id
     }
     this.notifyObservers(player, response.get, "GAMEHIT", nextTurnId)
+    checkForRevealed(response.get)
   }
 
   def gameStand(player: String): Unit = {
@@ -135,7 +139,6 @@ class GameController(ws: WSClient) extends Observable {
       json =>
         response = Some(json.json)
         dropPlayerIfEnded(players.indexWhere(p => p.id == player), json.json)
-        checkForRevealed(json.json: JsValue)
     }.recover {
       json => println(json.getMessage)
     }
@@ -149,12 +152,15 @@ class GameController(ws: WSClient) extends Observable {
     }
 
     this.notifyObservers(player, response.get, "GAMESTAND", nextTurnId)
+    checkForRevealed(response.get)
   }
 
   def checkForRevealed(json: JsValue): Unit = {
     val revealed = (json \ "revealed").get.as[Boolean]
     if (revealed) {
       ended = true
+      players = List()
+      subscribers = Vector()
     }
   }
 }
