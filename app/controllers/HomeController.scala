@@ -1,39 +1,30 @@
 package controllers
 
-import akka.actor.{Actor, ActorRef, ActorSystem, Props}
-import models.LoginData
-import play.api.data.Form
-import play.api.data.Forms.{default, mapping, nonEmptyText}
-
+import akka.actor.{ Actor, ActorRef, ActorSystem, Props }
 import javax.inject._
-import play.api.mvc._
-import play.api.libs.ws._
-import play.api.libs.json.{JsValue, Json}
+import play.api.data.Form
+import play.api.data.Forms.{ mapping, nonEmptyText }
+import play.api.libs.json.{ JsValue, Json }
 import play.api.libs.streams.ActorFlow
-import utils.{Observable, Observer}
+import play.api.libs.ws._
+import play.api.mvc._
+import utils.Observer
 
-import scala.concurrent.duration.Duration
-import scala.concurrent.{Await, ExecutionContextExecutor, Future}
-import controllers.Assets.Asset
+import scala.concurrent.ExecutionContextExecutor
 
 /**
  * This controller creates an `Action` to handle HTTP requests to the
  * application's home page.
  */
 @Singleton
-class HomeController @Inject()(val controllerComponents: ControllerComponents,
-                               ws: WSClient, assets: Assets) extends BaseController with play.api.i18n.I18nSupport {
+class HomeController @Inject() (
+  val controllerComponents: ControllerComponents,
+  ws: WSClient, assets: Assets) extends BaseController with play.api.i18n.I18nSupport {
   implicit val actorSystem: ActorSystem = ActorSystem("apiExecutionContext")
   implicit val executionContext: ExecutionContextExecutor = actorSystem.dispatcher
 
   var gamecontrollers = List[GameController]()
   val matchmaking = new MatchmakingController(ws)
-
-  val loginForm: Form[LoginData] = Form(
-    mapping(
-      "name" -> nonEmptyText,
-    )(LoginData.apply)(LoginData.unapply)
-  )
 
   /**
    * Create an Action to render an HTML page.
@@ -50,7 +41,7 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents,
 
   def serveRootJsFiles(file: String): Action[AnyContent] = {
 
-    assets.versioned("/public", file+".js")
+    assets.versioned("/public", file + ".js")
   }
 
   def user(): Action[AnyContent] = Action.async {
@@ -96,7 +87,7 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents,
                 gameController.add(this)
                 gameController.addPlayer(Player(playerId, "Player 0", playerIndex, out))
                 out ! Json.obj(
-                  "player"-> playerId,
+                  "player" -> playerId,
                   "game" -> json,
                   "action" -> "MATCHMAKING").toString()
                 gameController.startTask = Some(new StartGameTask(gameController))
@@ -104,7 +95,7 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents,
                 val playerReference = (json \ "players" \ 0).get.as[String]
                 val gameController = findGamecontrollerByPlayer(playerReference).get
                 out ! Json.obj(
-                  "player"-> playerId,
+                  "player" -> playerId,
                   "game" -> json,
                   "action" -> "MATCHMAKING").toString()
                 gameController.add(this)
@@ -171,7 +162,7 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents,
         "player" -> playerId,
         "game" -> message,
         "action" -> action,
-      "nextTurn" -> nextTurn).toString()
+        "nextTurn" -> nextTurn).toString()
     }
   }
 

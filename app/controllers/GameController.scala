@@ -1,13 +1,12 @@
 package controllers
 
-import akka.actor.{ActorRef, ActorSystem}
-import play.api.libs.json.{JsArray, JsObject, JsValue, Json}
-import play.api.libs.ws
-import play.api.libs.ws.{WSClient, WSRequest}
+import akka.actor.{ ActorRef, ActorSystem }
+import play.api.libs.json.{ JsObject, JsValue, Json }
+import play.api.libs.ws.{ WSClient, WSRequest }
 import utils.Observable
 
 import scala.concurrent.duration.Duration
-import scala.concurrent.{Await, ExecutionContextExecutor, Future}
+import scala.concurrent.{ Await, ExecutionContextExecutor, Future }
 
 class GameController(ws: WSClient) extends Observable {
 
