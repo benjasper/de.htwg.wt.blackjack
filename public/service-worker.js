@@ -14,7 +14,7 @@
 importScripts("https://storage.googleapis.com/workbox-cdn/releases/4.3.1/workbox-sw.js");
 
 importScripts(
-  "/precache-manifest.415bca3e6527a54243019fe71eb97e63.js"
+  "/precache-manifest.9f925a7931bc26c991f5298e5dc940ac.js"
 );
 
 workbox.core.setCacheNameDetails({prefix: "blackjack-frontend"});
