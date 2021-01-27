@@ -1,10 +1,10 @@
 package controllers
 
-import akka.actor.{ Actor, ActorRef, ActorSystem, Props }
+import akka.actor.{Actor, ActorRef, ActorSystem, Props}
 import javax.inject._
 import play.api.data.Form
-import play.api.data.Forms.{ mapping, nonEmptyText }
-import play.api.libs.json.{ JsValue, Json }
+import play.api.data.Forms.{mapping, nonEmptyText}
+import play.api.libs.json.{JsValue, Json}
 import play.api.libs.streams.ActorFlow
 import utils.{Observable, Observer}
 import play.api.Configuration
@@ -19,8 +19,9 @@ import scala.concurrent.ExecutionContextExecutor
  * application's home page.
  */
 @Singleton
-class HomeController @Inject()(val controllerComponents: ControllerComponents,
-                               ws: WSClient, assets: Assets, conf: Configuration) extends BaseController with play.api.i18n.I18nSupport {
+class HomeController @Inject()(
+                                val controllerComponents: ControllerComponents,
+                                ws: WSClient, assets: Assets, conf: Configuration) extends BaseController with play.api.i18n.I18nSupport {
   implicit val actorSystem: ActorSystem = ActorSystem("apiExecutionContext")
   implicit val executionContext: ExecutionContextExecutor = actorSystem.dispatcher
 
