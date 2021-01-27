@@ -11,6 +11,7 @@ import play.api.libs.ws._
 import play.api.libs.json.{JsValue, Json}
 import play.api.libs.streams.ActorFlow
 import utils.{Observable, Observer}
+import play.api.Configuration
 
 import scala.concurrent.duration.Duration
 import scala.concurrent.{Await, ExecutionContextExecutor, Future}
@@ -22,12 +23,15 @@ import controllers.Assets.Asset
  */
 @Singleton
 class HomeController @Inject()(val controllerComponents: ControllerComponents,
-                               ws: WSClient, assets: Assets) extends BaseController with play.api.i18n.I18nSupport {
+                               ws: WSClient, assets: Assets, conf: Configuration) extends BaseController with play.api.i18n.I18nSupport {
   implicit val actorSystem: ActorSystem = ActorSystem("apiExecutionContext")
   implicit val executionContext: ExecutionContextExecutor = actorSystem.dispatcher
 
+  val playerAPIHost: String = conf.underlying.getString("playerHost")
+  val gameAPIHost: String = conf.underlying.getString("gameHost")
+
   var gamecontrollers = List[GameController]()
-  val matchmaking = new MatchmakingController(ws)
+  val matchmaking = new MatchmakingController(ws, gameAPIHost)
 
   val loginForm: Form[LoginData] = Form(
     mapping(
@@ -56,7 +60,7 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents,
   def user(): Action[AnyContent] = Action.async {
     implicit request: Request[AnyContent] =>
       val player = request.getQueryString("player").getOrElse("")
-      val r: WSRequest = ws.url("http://localhost:9002/player/" + player)
+      val r: WSRequest = ws.url(s"${playerAPIHost}player/" + player)
       r.get().map {
         json => Ok(json.json)
       }.recover {
@@ -91,7 +95,7 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents,
               val playerIndex = (json \ "playerIndex").get.as[Int]
               println(json.toString())
               if (playerIndex == 0) {
-                val gameController = new GameController(ws)
+                val gameController = new GameController(ws, playerAPIHost, gameAPIHost)
                 gamecontrollers = gamecontrollers :+ gameController
                 gameController.add(this)
                 gameController.addPlayer(Player(playerId, "Player 0", playerIndex, out))

@@ -7,13 +7,13 @@ import utils.Observable
 
 import scala.concurrent.{ExecutionContextExecutor, Future}
 
-class MatchmakingController(ws: WSClient) {
+class MatchmakingController(ws: WSClient, gameHost: String) {
 
   implicit val actorSystem: ActorSystem = ActorSystem("matchmakingExecutionContext")
   implicit val executionContext: ExecutionContextExecutor = actorSystem.dispatcher
 
   def matchmaking(player: String): Future[JsValue] = {
-    val request: WSRequest = ws.url("http://localhost:9001/game/matchmaking")
+    val request: WSRequest = ws.url(s"${gameHost}game/matchmaking")
 
     val json: JsValue = Json.obj(
       "playerId" -> player,

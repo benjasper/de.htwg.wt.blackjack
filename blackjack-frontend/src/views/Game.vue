@@ -219,17 +219,26 @@ export default class Game extends Vue {
 	public matchmakingDialog = false
 	public connected = false
 
+	disableProd = false
+
+	isProd = false
+
 	socket: WebSocket
 
 	constructor() {
 		super()
+		if (process.env.NODE_ENV === 'production' && !this.disableProd) {
+			this.isProd = true
+		}
 
-		this.socket = this.initializeSocket()
-		this.updateUser()
-	}
+		let socket: WebSocket
+		console.log(this.isProd)
 
-	private initializeSocket(): WebSocket {
-		const socket = new WebSocket('ws://localhost:9000/websocket')
+		if (!this.isProd) {
+			socket = new WebSocket('ws://localhost:9000/websocket')
+		} else {
+			socket = new WebSocket('ws://htwg-blackjack.herokuapp.com/websocket')
+		}
 
 		// Connection opened
 		socket.addEventListener('open', (event) => {
@@ -251,7 +260,9 @@ export default class Game extends Vue {
 		// Listen for messages
 		socket.addEventListener('message', this.responseAction)
 
-		return socket
+		this.socket = socket
+
+		this.updateUser()
 	}
 
 	private responseAction(event: any) {
@@ -407,7 +418,7 @@ export default class Game extends Vue {
 
 	private updateUser() {
 		axios.defaults.headers.get['Access-Control-Allow-Origin'] = '*'
-		axios.get('http://localhost:9000/user?player=' + getLoggedInPlayer().id).then(response => {
+		axios.get('/user?player=' + getLoggedInPlayer().id).then(response => {
 			const data = response.data
 			if ('success' in data && data.success === false) {
 				this.error(data.msg)

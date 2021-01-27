@@ -9,7 +9,7 @@ import utils.Observable
 import scala.concurrent.duration.Duration
 import scala.concurrent.{Await, ExecutionContextExecutor, Future}
 
-class GameController(ws: WSClient) extends Observable {
+class GameController(ws: WSClient, playerHost: String, gameHost: String) extends Observable {
 
   implicit val actorSystem: ActorSystem = ActorSystem("gameExecutionContext")
   implicit val executionContext: ExecutionContextExecutor = actorSystem.dispatcher
@@ -67,7 +67,7 @@ class GameController(ws: WSClient) extends Observable {
     var futures: List[Future[Unit]] = List()
 
     for ((player, index) <- players.zipWithIndex) {
-      val request: WSRequest = ws.url("http://localhost:9001/game/start")
+      val request: WSRequest = ws.url(s"${gameHost}game/start")
 
       val json: JsValue = Json.obj(
         "playerId" -> player.id
@@ -105,7 +105,7 @@ class GameController(ws: WSClient) extends Observable {
   }
 
   def gameHit(player: String): Unit = {
-    val request: WSRequest = ws.url("http://localhost:9001/game/hit")
+    val request: WSRequest = ws.url(s"${gameHost}game/hit")
     val body: JsValue = Json.obj(
       "playerId" -> player
     )
@@ -130,7 +130,7 @@ class GameController(ws: WSClient) extends Observable {
   }
 
   def gameStand(player: String): Unit = {
-    val request: WSRequest = ws.url("http://localhost:9001/game/stand")
+    val request: WSRequest = ws.url(s"${gameHost}game/stand")
     val body: JsValue = Json.obj(
       "playerId" -> player
     )
