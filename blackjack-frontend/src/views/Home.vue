@@ -16,12 +16,12 @@
 			</v-col>
 		</v-row>
 		<v-row>
-			<v-col cols="12" class="m-auto text-center">
+			<v-col v-if="!isLoggedIn" cols="12" class="m-auto text-center">
 				<v-btn to="/signin" role="button">Sign up</v-btn>
 			</v-col>
 		</v-row>
 		<v-row>
-			<v-col cols="12" class="m-auto text-center">
+			<v-col v-if="!isLoggedIn" cols="12" class="m-auto text-center">
 				<v-btn to="/login" role="button">Log in</v-btn>
 			</v-col>
 		</v-row>
