@@ -38,7 +38,7 @@ class SocialAuthController @Inject() (
               authInfo <- authInfoRepository.save(profile.loginInfo, authInfo)
               authenticator <- authenticatorService.create(profile.loginInfo)
               value <- authenticatorService.init(authenticator)
-              jsonVal <- matchmakingController.addUser(s"${user.firstName} ${user.lastName}")
+              jsonVal <- matchmakingController.addUser(s"${user.firstName.getOrElse("")} ${user.lastName.getOrElse("")}")
               id <- Future((jsonVal \ "id").as[String])
               result <- authenticatorService.embed(value, Redirect(routes.HomeController.index(Some(id))))
             } yield {
