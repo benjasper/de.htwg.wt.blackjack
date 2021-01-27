@@ -13,7 +13,7 @@
             <li><a href="#tutorial/3">Modules</a> : how things are wired up.</li>
             <li><a href="#tutorial/4">Handle errors in endpoints</a> : customize the behaviour in case of <i>not authenticated</i> or <i>not authorized</i> users.</li>
             <li><a href="#tutorial/5">Identity/IdentityService</a> : the structure of a user object and how to get one.</li>
-            <li><a href="#tutorial/6">DAOs</a> : store the data.</li>
+            <li><a href="#tutorial/6">DAOs</a> : index the data.</li>
             <li><a href="#tutorial/7">Authorization</a> : who can access what.</li>
             <li><a href="#tutorial/8">Conclusion</a></li>
         </ul>
@@ -96,7 +96,7 @@
     <div>
         <h2>DAOs</h2>
         <p>
-            As you can see in the <a href="#code/app/models/daos/">daos</a> package, this seed contains data access objects (DAOs) for <code>User</code>s and for <code>AuthToken</code>s (tokens to activate a user via email or change the password). They are implemented to store the data in an in-memory <code>HashMap</code> for the example. To keep the data over a restart of your application you have to give these DAOs an other implementation storing the values in a <a href="https://www.playframework.com/documentation/2.5.x/ScalaDatabase">database</a>. You can then replace the implementation bound in the <a href="#code/app/modules/SilhouetteModule.scala">SilhouetteModule</a> (or <a href="#code/app/modules/BaseModule.scala">BaseModule</a> for the AuthToken).
+            As you can see in the <a href="#code/app/models/daos/">daos</a> package, this seed contains data access objects (DAOs) for <code>User</code>s and for <code>AuthToken</code>s (tokens to activate a user via email or change the password). They are implemented to index the data in an in-memory <code>HashMap</code> for the example. To keep the data over a restart of your application you have to give these DAOs an other implementation storing the values in a <a href="https://www.playframework.com/documentation/2.5.x/ScalaDatabase">database</a>. You can then replace the implementation bound in the <a href="#code/app/modules/SilhouetteModule.scala">SilhouetteModule</a> (or <a href="#code/app/modules/BaseModule.scala">BaseModule</a> for the AuthToken).
         </p>
         <p>
             There are other DAOs in this application, but their implementation comes from Silhouette. You can find the bindings in the <a href="#code/app/modules/SilhouetteModule.scala">SilhouetteModule</a> :
@@ -106,7 +106,7 @@ bind[DelegableAuthInfoDAO[OAuth1Info]].toInstance(new InMemoryAuthInfoDAO[OAuth1
 bind[DelegableAuthInfoDAO[OAuth2Info]].toInstance(new InMemoryAuthInfoDAO[OAuth2Info])
 bind[DelegableAuthInfoDAO[OpenIDInfo]].toInstance(new InMemoryAuthInfoDAO[OpenIDInfo])
 </code></pre></p><p>
-            These are all <code>AuthInfoDAO</code>s which store the information concerning authentication, like the password for users signing in with credentials. You may wonder why not directly store the password in the <code>User</code> object, but remember that we want users to be able to sign in via other authentication providers like Google or Facebook. Our application will not have to store a password for these users, but other authentication information depending on the protocol (OAuth1, OAuth2 or OpenID). Therefore it makes more sense to split the auth info from the rest of the user and store it in a different DAO.
+            These are all <code>AuthInfoDAO</code>s which index the information concerning authentication, like the password for users signing in with credentials. You may wonder why not directly index the password in the <code>User</code> object, but remember that we want users to be able to sign in via other authentication providers like Google or Facebook. Our application will not have to index a password for these users, but other authentication information depending on the protocol (OAuth1, OAuth2 or OpenID). Therefore it makes more sense to split the auth info from the rest of the user and index it in a different DAO.
             <br/>
             Like for the <code>UserDAO</code>, you will have to provide other implementations to persist the data.
         </p>
