@@ -241,21 +241,9 @@ export default class Game extends Vue {
 		}
 
 		// Connection opened
-		socket.addEventListener('open', (event) => {
-			window.setInterval(() => {
-				socket.send(JSON.stringify(
-					{
-						action: 'ping', playerId: getLoggedInPlayer().id
-					}))
-			}, 5000)
-			this.connected = true
-			console.log(event)
-		})
+		socket.addEventListener('open', this.socketOpen)
 
-		socket.addEventListener('close', () => {
-			this.connected = false
-			alert('Connection closed!')
-		})
+		socket.addEventListener('close', this.socketClose)
 
 		// Listen for messages
 		socket.addEventListener('message', this.responseAction)
@@ -263,6 +251,22 @@ export default class Game extends Vue {
 		this.socket = socket
 
 		this.updateUser()
+	}
+
+	private socketClose() {
+		this.connected = false
+		alert('Connection closed!')
+	}
+
+	private socketOpen(event: any) {
+		window.setInterval(() => {
+			this.socket.send(JSON.stringify(
+				{
+					action: 'ping', playerId: getLoggedInPlayer().id
+				}))
+		}, 5000)
+		this.connected = true
+		console.log(event)
 	}
 
 	private responseAction(event: any) {
