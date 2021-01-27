@@ -13,7 +13,7 @@ module.exports = {
 			themeColor: "#42b983",
 			start_url: "./index.html",
 			background_color: "#42b983",
-			short_name: "BJ",
+			short_name: "BlackJack",
 		}
 	}
 }
