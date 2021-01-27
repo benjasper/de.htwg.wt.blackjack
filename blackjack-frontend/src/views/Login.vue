@@ -33,7 +33,7 @@
 						</v-col>
 					</v-row>
 					<v-row>
-						<v-col cols="4">
+						<v-col cols="6">
 							<v-btn
 								color="success"
 								@click="login"
@@ -41,16 +41,17 @@
 								Log in
 							</v-btn>
 						</v-col>
-						<v-col cols="4">
+						<v-col cols="6">
 							<v-btn
 								color="error"
 								@click="googleLogin"
 							>
 								Google Log in
 							</v-btn>
-						</v-col
-						>
-						<v-col cols="4">
+						</v-col>
+					</v-row>
+					<v-row>
+						<v-col cols="12" class="m-auto text-center">
 							<v-btn to="/signin">
 								Register here
 							</v-btn>

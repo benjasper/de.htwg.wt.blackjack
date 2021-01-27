@@ -1,26 +1,40 @@
 <template>
-	<div class="playing-table">
+	<div class="playing-table d-block">
 		<div id="heading">
 			<h1 style="text-align: center">
 				Game Menu
 			</h1>
 		</div>
-		<div style="text-align: center">
-			<h2>Hello {{ name }}</h2>
-			<v-btn to="/rules" role="button">Rules</v-btn>
-			<br>
-			<br>
-			<v-btn to="/signin" role="button">Sign up</v-btn>
-			<br>
-			<br>
-			<v-btn to="/login" role="button">Log in</v-btn>
-			<br>
-			<br>
-			<v-btn to="/game" role="button" color="info">Start Game</v-btn>
-			<br>
-			<br>
-			<v-btn @click="logout" role="button" color="error">Log out</v-btn>
-		</div>
+		<v-row>
+			<v-col cols="12" class="m-auto text-center">
+				<h2>Hello {{ name }}</h2>
+			</v-col>
+		</v-row>
+		<v-row>
+			<v-col cols="12" class="m-auto text-center">
+				<v-btn to="/rules" role="button">Rules</v-btn>
+			</v-col>
+		</v-row>
+		<v-row>
+			<v-col cols="12" class="m-auto text-center">
+				<v-btn to="/signin" role="button">Sign up</v-btn>
+			</v-col>
+		</v-row>
+		<v-row>
+			<v-col cols="12" class="m-auto text-center">
+				<v-btn to="/login" role="button">Log in</v-btn>
+			</v-col>
+		</v-row>
+		<v-row>
+			<v-col cols="12" class="m-auto text-center">
+				<v-btn to="/game" role="button" color="info">Start Game</v-btn>
+			</v-col>
+		</v-row>
+		<v-row>
+			<v-col cols="12" class="m-auto text-center">
+				<v-btn @click="logout" role="button" color="error">Log out</v-btn>
+			</v-col>
+		</v-row>
 	</div>
 </template>
 
