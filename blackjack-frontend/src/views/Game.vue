@@ -172,6 +172,7 @@ import PlayerComponent from '@/components/Player.vue'
 import CardComponent from '@/components/Card.vue'
 import Component from 'vue-class-component'
 import axios from 'axios'
+import store from '@/store'
 
 class Card {
 	public cardKey = ''
@@ -199,8 +200,7 @@ function getLoggedInPlayer(): Player {
 	if (localStorage.getItem('player') != null) {
 		return JSON.parse(localStorage.getItem('player') ?? '')
 	}
-	return new Player('5fdb233f4e6244478a74b644', 'Benni')
-	// return new Player('', '')
+	return new Player(store.getters.getPlayerId, 'Player')
 }
 
 @Component({
@@ -269,7 +269,7 @@ export default class Game extends Vue {
 		window.setInterval(() => {
 			this.socket.send(JSON.stringify(
 				{
-					action: 'ping', playerId: getLoggedInPlayer().id
+					action: 'ping', playerId: store.getters.getPlayerId
 				}))
 		}, 5000)
 		this.connected = true
@@ -327,14 +327,14 @@ export default class Game extends Vue {
 		let playerIndex = this.playerNumber
 		let isWatching = false
 
-		if (response.player !== getLoggedInPlayer().id) {
+		if (response.player !== store.getters.getPlayerId) {
 			playerIndex = this.players.findIndex(player => player.id === response.player)
 			console.log(playerIndex)
 			isWatching = true
 		}
 
 		this.matchmakingDialog = false
-		if (response.nextTurn === getLoggedInPlayer().id) {
+		if (response.nextTurn === store.getters.getPlayerId) {
 			this.actionsEnabled = true
 		}
 
@@ -377,7 +377,7 @@ export default class Game extends Vue {
 
 		let playerIndex = this.playerNumber
 
-		if (response.player !== getLoggedInPlayer().id) {
+		if (response.player !== store.getters.getPlayerId) {
 			playerIndex = this.players.findIndex(player => player.id === response.player)
 		}
 
@@ -386,7 +386,7 @@ export default class Game extends Vue {
 		this.players[playerIndex].handValue = response.game.playerCardsValue
 		Vue.set(this.players, playerIndex, this.players[playerIndex])
 
-		if (response.nextTurn === getLoggedInPlayer().id) {
+		if (response.nextTurn === store.getters.getPlayerId) {
 			this.actionsEnabled = true
 		}
 
@@ -422,12 +422,12 @@ export default class Game extends Vue {
 
 		let playerIndex = this.playerNumber
 
-		if (response.player !== getLoggedInPlayer().id) {
+		if (response.player !== store.getters.getPlayerId) {
 			playerIndex = this.players.findIndex(player => player.id === response.player)
 			this.actionsEnabled = false
 		}
 
-		if (response.nextTurn === getLoggedInPlayer().id) {
+		if (response.nextTurn === store.getters.getPlayerId) {
 			this.actionsEnabled = true
 			return
 		}
@@ -453,14 +453,20 @@ export default class Game extends Vue {
 
 	private updateUser() {
 		axios.defaults.headers.get['Access-Control-Allow-Origin'] = '*'
-		axios.get('/user?player=' + getLoggedInPlayer().id).then(response => {
+
+		const playerId = store.getters.getPlayerId
+		axios.get('/user?player=' + playerId).then(response => {
 			const data = response.data
 			if ('success' in data && data.success === false) {
 				this.error(data.msg)
 				return
 			}
-
+			const player = this.players.find(player => player.id === playerId)
 			this.playerBalance = data.balance
+			if (player === undefined) {
+				return
+			}
+			player.name = data.name
 		})
 	}
 
@@ -510,7 +516,7 @@ export default class Game extends Vue {
 
 		const request = {
 			action: 'matchmaking',
-			playerId: getLoggedInPlayer().id
+			playerId: store.getters.getPlayerId
 		}
 
 		this.socket.send(JSON.stringify(request))
@@ -519,7 +525,7 @@ export default class Game extends Vue {
 	public forceStart() {
 		const request = {
 			action: 'forcestart',
-			playerId: getLoggedInPlayer().id
+			playerId: store.getters.getPlayerId
 		}
 
 		this.socket.send(JSON.stringify(request))
@@ -528,7 +534,7 @@ export default class Game extends Vue {
 	public hitGame() {
 		const request = {
 			action: 'gameHit',
-			playerId: getLoggedInPlayer().id
+			playerId: store.getters.getPlayerId
 		}
 
 		this.actionsEnabled = false
@@ -538,7 +544,7 @@ export default class Game extends Vue {
 	public gameStand() {
 		const request = {
 			action: 'gameStand',
-			playerId: getLoggedInPlayer().id
+			playerId: store.getters.getPlayerId
 		}
 
 		this.actionsEnabled = false

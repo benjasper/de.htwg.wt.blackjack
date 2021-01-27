@@ -33,6 +33,7 @@ export default class Home extends Vue {
 		}
 		console.log('Now logging in' + userId)
 		store.dispatch('setLoggedIn', urlParams.get('userId'))
+		location.reload()
 	}
 }
 </script>

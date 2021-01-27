@@ -15,15 +15,43 @@ const axiosConfig = {
 	crossdomain: true
 }
 
+class Player {
+	public id = ''
+	public name = ''
+
+	constructor(playerId: string, name: string) {
+		this.id = playerId
+		this.name = name
+	}
+}
+
 const store = new Vuex.Store({
 	state: {
 		status: '',
 		token: localStorage.getItem('token') || '',
 		user: {},
-		signedIn: false
+		signedIn: false,
+		playerPromise: undefined as unknown as Promise<Player>
 	},
 	actions: {
 		setLoggedIn({ commit }, userId) {
+			localStorage.setItem('userId', userId)
+			const promise = new Promise<Player>((resolve, reject) => {
+				axios.get('/user?player=' + userId).then(response => {
+					const data = response.data
+					if ('success' in data && data.success === false) {
+						console.error(response)
+						reject(response)
+						return
+					}
+
+					resolve(new Player(userId, data.name))
+				})
+			})
+			promise.then(player => {
+				localStorage.setItem('player', JSON.stringify(player))
+			})
+
 			localStorage.setItem('userId', userId)
 			commit('SET_LOGIN', true)
 		},
@@ -74,6 +102,13 @@ const store = new Vuex.Store({
 		isLoggedIn() {
 			const userId = localStorage.getItem('userId')
 			return userId !== '' && userId !== undefined && userId !== null
+		},
+		getPlayerId(): string {
+			const result = localStorage.getItem('userId')
+			if (result === null) {
+				return ''
+			}
+			return result.toString()
 		}
 	}
 })
