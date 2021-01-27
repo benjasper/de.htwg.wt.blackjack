@@ -1,14 +1,18 @@
 self.__precacheManifest = (self.__precacheManifest || []).concat([
   {
-    "revision": "23edc2d5db7ae7c0ad43",
-    "url": "/css/app.05f4ba6b.css"
+    "revision": "f7515c0aec0439a76610",
+    "url": "/css/app.4b0ad720.css"
   },
   {
-    "revision": "cafbe915d42a7b2be987",
+    "revision": "4f20175dcf06025d8a4b",
+    "url": "/css/chunk-107ccdc0.36ddc28f.css"
+  },
+  {
+    "revision": "80c2ccb46468b2d7c5c1",
     "url": "/css/chunk-vendors.ba103142.css"
   },
   {
-    "revision": "bb26b8cf21f7fef596a8",
+    "revision": "53736d7a74f841caa47c",
     "url": "/css/game.2a89ca31.css"
   },
   {
@@ -272,20 +276,24 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/images/wood.jpg"
   },
   {
-    "revision": "92c55c7e5b7d0b87e040ddd52cd34b0c",
+    "revision": "98c6ebdd705bcf8c7c025f120779bc47",
     "url": "/index.html"
   },
   {
-    "revision": "23edc2d5db7ae7c0ad43",
-    "url": "/js/app.433c4862.js"
+    "revision": "f7515c0aec0439a76610",
+    "url": "/js/app.99245d82.js"
   },
   {
-    "revision": "cafbe915d42a7b2be987",
-    "url": "/js/chunk-vendors.1e0044b7.js"
+    "revision": "4f20175dcf06025d8a4b",
+    "url": "/js/chunk-107ccdc0.e0afccc0.js"
   },
   {
-    "revision": "bb26b8cf21f7fef596a8",
-    "url": "/js/game.06885a1c.js"
+    "revision": "80c2ccb46468b2d7c5c1",
+    "url": "/js/chunk-vendors.520a3843.js"
+  },
+  {
+    "revision": "53736d7a74f841caa47c",
+    "url": "/js/game.eebd4d2a.js"
   },
   {
     "revision": "03e051649a3be210a78f166bdbd07aee",

@@ -23,18 +23,10 @@ const store = new Vuex.Store({
 		signedIn: false
 	},
 	actions: {
-		checkSignedIn({commit}) {
-			axios.get('https://' + server + '/checkSignedIn', axiosConfig)
-				.then((response) => {
-					console.log(response)
-					commit('SET_LOGIN', true)
-				})
-				.catch(error => {
-					console.error(error)
-					console.log('Du bist nicht eingeloggt.')
-				})
+		setLoggedIn({ commit }, userId) {
+			localStorage.setItem('userId', userId)
+			commit('SET_LOGIN', true)
 		},
-
 		login({ commit }, user) {
 			const loginConf = axiosConfig
 			loginConf.headers = {'Content-Type': 'application/x-www-form-urlencoded', Accept: 'application/json'}
@@ -79,7 +71,10 @@ const store = new Vuex.Store({
 		}
 	},
 	getters: {
-
+		isLoggedIn() {
+			const userId = localStorage.getItem('userId')
+			return userId !== '' && userId !== undefined && userId !== null
+		}
 	}
 })
 
