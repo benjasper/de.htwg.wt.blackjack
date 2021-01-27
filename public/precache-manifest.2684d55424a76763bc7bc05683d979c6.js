@@ -1,6 +1,6 @@
 self.__precacheManifest = (self.__precacheManifest || []).concat([
   {
-    "revision": "8af2098197e023876950",
+    "revision": "60d4ed8873c96030042e",
     "url": "/css/app.05f4ba6b.css"
   },
   {
@@ -8,7 +8,7 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/css/chunk-vendors.ba103142.css"
   },
   {
-    "revision": "bcb572d064d31c016827",
+    "revision": "cdf5d607fe9e13d382a1",
     "url": "/css/game.2a89ca31.css"
   },
   {
@@ -272,20 +272,20 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/images/wood.jpg"
   },
   {
-    "revision": "d23aed256be432387d7fbb272b885f51",
+    "revision": "d15043e901d38a6331ef9621b6f71695",
     "url": "/index.html"
   },
   {
-    "revision": "8af2098197e023876950",
-    "url": "/js/app.635c4ac6.js"
+    "revision": "60d4ed8873c96030042e",
+    "url": "/js/app.c92afdf0.js"
   },
   {
     "revision": "cafbe915d42a7b2be987",
     "url": "/js/chunk-vendors.1e0044b7.js"
   },
   {
-    "revision": "bcb572d064d31c016827",
-    "url": "/js/game.e9a24b9c.js"
+    "revision": "cdf5d607fe9e13d382a1",
+    "url": "/js/game.808ae9c5.js"
   },
   {
     "revision": "03e051649a3be210a78f166bdbd07aee",

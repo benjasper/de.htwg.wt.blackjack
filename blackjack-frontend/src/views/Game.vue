@@ -237,7 +237,7 @@ export default class Game extends Vue {
 		if (!this.isProd) {
 			socket = new WebSocket('ws://localhost:9000/websocket')
 		} else {
-			socket = new WebSocket('ws://htwg-blackjack.herokuapp.com/websocket')
+			socket = new WebSocket('wss://htwg-blackjack.herokuapp.com/websocket')
 		}
 
 		// Connection opened
