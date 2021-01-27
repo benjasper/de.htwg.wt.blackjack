@@ -1,23 +1,27 @@
 self.__precacheManifest = (self.__precacheManifest || []).concat([
   {
-    "revision": "d029adbccf01baa6f090",
+    "revision": "680e70638a24bd0c5c8b",
     "url": "/css/app.4b0ad720.css"
   },
   {
-    "revision": "63705b03096708e2d9fc",
-    "url": "/css/chunk-3627d325.482cb13b.css"
+    "revision": "2cd4dc9d0507d739f667",
+    "url": "/css/chunk-0bd12dc5.0a3ff035.css"
   },
   {
-    "revision": "6cfa4e3388a02e22d82d",
-    "url": "/css/chunk-79bd0b04.bb855f5c.css"
+    "revision": "284ff8063aba4ad67e2c",
+    "url": "/css/chunk-3863ded4.2f50408f.css"
   },
   {
-    "revision": "9d60e5b907dc0d19c379",
-    "url": "/css/chunk-vendors.ba103142.css"
+    "revision": "d582363c9477f95c49b8",
+    "url": "/css/chunk-e18ccb40.9a4902a5.css"
   },
   {
-    "revision": "409b13fe469fcd1f0613",
-    "url": "/css/game.2a89ca31.css"
+    "revision": "3a52b71a6b10bbf7889a",
+    "url": "/css/chunk-vendors.ee98af4f.css"
+  },
+  {
+    "revision": "886b074f00ef9d78cde9",
+    "url": "/css/game.c2e62638.css"
   },
   {
     "revision": "d2e4a82e4b745a9d1af4aa60427c75af",
@@ -280,28 +284,32 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/images/wood.jpg"
   },
   {
-    "revision": "e560aba63067f4174c89214b37132ca5",
+    "revision": "a6b847ce0997eb9b146495f9a47fb44a",
     "url": "/index.html"
   },
   {
-    "revision": "d029adbccf01baa6f090",
-    "url": "/js/app.5d1e8a43.js"
+    "revision": "680e70638a24bd0c5c8b",
+    "url": "/js/app.589181ee.js"
   },
   {
-    "revision": "63705b03096708e2d9fc",
-    "url": "/js/chunk-3627d325.1af2b614.js"
+    "revision": "2cd4dc9d0507d739f667",
+    "url": "/js/chunk-0bd12dc5.979c86e6.js"
   },
   {
-    "revision": "6cfa4e3388a02e22d82d",
-    "url": "/js/chunk-79bd0b04.8b4744b3.js"
+    "revision": "284ff8063aba4ad67e2c",
+    "url": "/js/chunk-3863ded4.9d4aeae0.js"
   },
   {
-    "revision": "9d60e5b907dc0d19c379",
-    "url": "/js/chunk-vendors.a01f97d4.js"
+    "revision": "d582363c9477f95c49b8",
+    "url": "/js/chunk-e18ccb40.8696e2b4.js"
   },
   {
-    "revision": "409b13fe469fcd1f0613",
-    "url": "/js/game.c3754df7.js"
+    "revision": "3a52b71a6b10bbf7889a",
+    "url": "/js/chunk-vendors.2f847139.js"
+  },
+  {
+    "revision": "886b074f00ef9d78cde9",
+    "url": "/js/game.c40438e9.js"
   },
   {
     "revision": "0f9513d66ff85b7ba1837a68215f4321",
