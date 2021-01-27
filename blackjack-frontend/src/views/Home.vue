@@ -6,7 +6,7 @@
 			</h1>
 		</div>
 		<div style="text-align: center">
-			<h2>Hello {{ name }}}</h2>
+			<h2>Hello {{ name }}</h2>
 			<v-btn to="/rules" role="button">Rules</v-btn>
 			<br>
 			<br>
