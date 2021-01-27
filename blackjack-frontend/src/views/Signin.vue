@@ -25,6 +25,7 @@
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator'
+import store from '@/store'
 @Component({
 	name: 'Signin'
 })
@@ -36,14 +37,13 @@ export default class Signin extends Vue {
 	// emailRules: [ (value) => !!value || "Required.", (v) => /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(v) || "E-mail must be valid" ]
 
 	register() {
-		const formData = new FormData();
-		formData.append("firstName", this.name);
-		formData.append("lastName", this.lastname);
-		formData.append("email", this.email);
-		formData.append("password", this.password);
-		this.$store.dispatch("register", formData);
-	},
-
+		const formData = new FormData()
+		formData.append('firstName', this.name)
+		formData.append('lastName', this.lastname)
+		formData.append('email', this.email)
+		formData.append('password', this.password)
+		store.dispatch('register', formData)
+	}
 }
 
 </script>
@@ -54,6 +54,6 @@ export default class Signin extends Vue {
 	top: 35%;
 	left: 50%;
 	transform: translate(-50%, -50%);
-	white-space: nowrap;
+	white-space: nowrap
 }
 </style>

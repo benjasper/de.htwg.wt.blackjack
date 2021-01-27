@@ -9,6 +9,7 @@ const server = ''
 const axiosConfig = {
 	withCredentials: true,
 	headers: {
+		'X-Requested-With': 'vue',
 		'Content-Type': 'application/json',
 		Accept: 'application/json'
 	},
@@ -54,14 +55,35 @@ const store = new Vuex.Store({
 
 			localStorage.setItem('userId', userId)
 			commit('SET_LOGIN', true)
+			router.push('/')
 		},
 		login({ commit }, user) {
+			console.log(user)
 			const loginConf = axiosConfig
-			loginConf.headers = {'Content-Type': 'application/x-www-form-urlencoded', Accept: 'application/json'}
-			axios.post('https://' + server + '/signIn', user, loginConf)
+			loginConf.headers = {'X-Requested-With': 'vue', 'Content-Type': 'application/x-www-form-urlencoded', Accept: 'application/json'}
+			axios.post('/signIn', user, loginConf)
 				.then((response) => {
-					console.log(response)
+					console.log(response.data)
+					const userId = response.data.userId
+					localStorage.setItem('userId', userId)
 					commit('SET_LOGIN', true)
+					localStorage.setItem('userId', userId)
+					const promise = new Promise<Player>((resolve, reject) => {
+						axios.get('/user?player=' + userId).then(response => {
+							const data = response.data
+							if ('success' in data && data.success === false) {
+								console.error(response)
+								reject(response)
+								return
+							}
+
+							resolve(new Player(userId, data.name))
+						})
+					})
+					promise.then(player => {
+						localStorage.setItem('player', JSON.stringify(player))
+					})
+
 					router.push('/')
 				})
 				.catch(function (response) {
@@ -71,7 +93,7 @@ const store = new Vuex.Store({
 		},
 
 		logout({ commit }) {
-			axios.get('https://' + server + '/signOut', axiosConfig)
+			axios.get('/signOut', axiosConfig)
 				.then(() => {
 					router.push('/login')
 					commit('SET_LOGIN', false)
@@ -83,8 +105,8 @@ const store = new Vuex.Store({
 
 		register({ commit }, user) {
 			const loginConf = axiosConfig
-			loginConf.headers = {'Content-Type': 'application/x-www-form-urlencoded', Accept: 'application/json'}
-			axios.post('https://' + server + '/signUp', user, loginConf)
+			loginConf.headers = {'X-Requested-With': 'vue', 'Content-Type': 'application/x-www-form-urlencoded', Accept: 'application/json'}
+			axios.post('/signUp', user, loginConf)
 				.then(function () {
 					router.push('/login')
 				}.bind(this))

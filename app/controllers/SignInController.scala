@@ -5,8 +5,10 @@ import com.mohiva.play.silhouette.api.util.Credentials
 import com.mohiva.play.silhouette.impl.exceptions.IdentityNotFoundException
 import com.mohiva.play.silhouette.impl.providers._
 import forms.{ SignInForm, TotpForm }
+
 import javax.inject.Inject
 import play.api.i18n.Messages
+import play.api.libs.json.Json
 import play.api.mvc.{ AnyContent, Request }
 import utils.route.Calls
 
@@ -43,14 +45,9 @@ class SignInController @Inject() (
         val credentials = Credentials(data.email, data.password)
         credentialsProvider.authenticate(credentials).flatMap { loginInfo =>
           userService.retrieve(loginInfo).flatMap {
-            case Some(user) if !user.activated =>
-              Future.successful(Ok(activateAccount(data.email)))
             case Some(user) =>
-              authInfoRepository.find[GoogleTotpInfo](user.loginInfo).flatMap {
-                case Some(totpInfo) => Future.successful(Ok(totp(TotpForm.form.fill(TotpForm.Data(
-                  user.userID, totpInfo.sharedKey, data.rememberMe)))))
-                case _ => authenticateUser(user, data.rememberMe)
-              }
+              Future.successful(Ok(Json.obj(
+                "userId" -> user.apiId).toString()))
             case None => Future.failed(new IdentityNotFoundException("Couldn't find user"))
           }
         }.recover {

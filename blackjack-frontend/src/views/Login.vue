@@ -22,6 +22,7 @@
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator'
+import store from '@/store'
 @Component({
 	name: 'Login'
 })
@@ -34,7 +35,7 @@ export default class Login extends Vue {
 		const formData = new FormData()
 		formData.append('email', this.email)
 		formData.append('password', this.password)
-		this.$store.dispatch('login', formData)
+		store.dispatch('login', formData)
 	}
 
 	googleLogin() {

@@ -9,9 +9,11 @@ GET         /signOut                         controllers.ApplicationController.s
 GET         /authenticate/:provider          controllers.SocialAuthController.authenticate(provider)
 
 GET         /signUp                          controllers.SignUpController.view
++nocsrf
 POST        /signUp                          controllers.SignUpController.submit
 
 GET         /signIn                          controllers.SignInController.view
++nocsrf
 POST        /signIn                          controllers.SignInController.submit
 
 GET         /totp                            controllers.TotpController.view(userId: java.util.UUID, sharedKey: String, rememberMe: Boolean)

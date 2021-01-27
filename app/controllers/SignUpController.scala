@@ -46,12 +46,11 @@ class SignUpController @Inject() (
           case Some(user) =>
             val url = Calls.signin.absoluteURL()
 
-
             Future.successful(result)
           case None =>
             val authInfo = passwordHasherRegistry.current.hash(data.password)
             for {
-              jsonVal <- matchmakingController.addUser(s"${user.firstName.getOrElse("")} ${user.lastName.getOrElse("")}")
+              jsonVal <- matchmakingController.addUser(s"${data.firstName} ${data.lastName}")
               id <- Future((jsonVal \ "id").as[String])
             } yield {
               val user = User(
@@ -76,6 +75,7 @@ class SignUpController @Inject() (
                 result
               }
             }
+            Future.successful(result)
         }
       }
     )

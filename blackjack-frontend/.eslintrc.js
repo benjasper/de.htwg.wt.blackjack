@@ -21,6 +21,7 @@ module.exports = {
 		'indent': 'off',
 		'no-mixed-spaces-and-tabs': 'off',
 		'@typescript-eslint/no-unused-vars': 'off',
-		'no-extra-bind': 'off'
+		'no-extra-bind': 'off',
+		'no-constant-condition': 'off'
 	}
 }

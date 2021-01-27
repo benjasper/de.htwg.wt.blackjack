@@ -10,6 +10,12 @@
 			<v-btn to="/rules" role="button">Rules</v-btn>
 			<br>
 			<br>
+			<v-btn to="/signin" role="button">Sign up</v-btn>
+			<br>
+			<br>
+			<v-btn to="/login" role="button">Log in</v-btn>
+			<br>
+			<br>
 			<v-btn to="/game" role="button">Start Game</v-btn>
 		</div>
 	</div>
@@ -28,10 +34,11 @@ export default class Home extends Vue {
 		const queryString = window.location.search
 		const urlParams = new URLSearchParams(queryString)
 
-		const userId = urlParams.get('userId')
+		let userId = urlParams.get('userId')
 		if (urlParams.get('userId') === '' || userId === null || store.getters.isLoggedIn) {
 			console.log('No login needed, because' + userId)
 			if (store.getters.isLoggedIn) {
+				userId = store.getters.getPlayerId
 				axios.get('/user?player=' + userId).then(response => {
 					const data = response.data
 					if ('success' in data && data.success === false) {
