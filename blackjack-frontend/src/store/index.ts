@@ -114,6 +114,7 @@ const store = new Vuex.Store({
 					router.push('/login')
 				}.bind(this))
 				.catch(() => {
+					router.push('/login')
 					console.log('Something went wrong')
 				})
 		}
