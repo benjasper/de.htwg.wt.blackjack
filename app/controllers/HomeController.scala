@@ -29,7 +29,7 @@ class HomeController @Inject() (
   val gameAPIHost: String = conf.underlying.getString("gameHost")
 
   var gamecontrollers = List[GameController]()
-  val matchmaking = new MatchmakingController(ws, gameAPIHost)
+  val matchmaking = new MatchmakingController(ws, conf)
 
   /**
    * Create an Action to render an HTML page.
@@ -38,10 +38,8 @@ class HomeController @Inject() (
    * will be called when the application receives a `GET` request with
    * a path of `/`.
    */
-  def index: Action[AnyContent] = {
-
+  def index(userId: Option[String]): Action[AnyContent] = {
     assets.at("/public", "index.html")
-
   }
 
   def serveRootJsFiles(file: String): Action[AnyContent] = {
