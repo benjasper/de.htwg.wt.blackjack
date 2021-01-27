@@ -23,6 +23,7 @@ case class User(
   lastName: Option[String],
   fullName: Option[String],
   email: Option[String],
+  apiId: Option[String] = None,
   avatarURL: Option[String],
   activated: Boolean) extends Identity {
 

@@ -19,7 +19,7 @@ import scala.concurrent.{ ExecutionContext, Future }
  */
 class SignUpController @Inject() (
   components: SilhouetteControllerComponents,
-  signUp: views.html.signUp
+  signUp: views.html.signUp, matchmakingController: MatchmakingController
 )(implicit ex: ExecutionContext) extends SilhouetteController(components) {
 
   /**
@@ -45,44 +45,36 @@ class SignUpController @Inject() (
         userService.retrieve(loginInfo).flatMap {
           case Some(user) =>
             val url = Calls.signin.absoluteURL()
-            mailerClient.send(Email(
-              subject = Messages("email.already.signed.up.subject"),
-              from = Messages("email.from"),
-              to = Seq(data.email),
-              bodyText = Some(views.txt.emails.alreadySignedUp(user, url).body),
-              bodyHtml = Some(views.html.emails.alreadySignedUp(user, url).body)
-            ))
+
 
             Future.successful(result)
           case None =>
             val authInfo = passwordHasherRegistry.current.hash(data.password)
-            val user = User(
-              userID = UUID.randomUUID(),
-              loginInfo = loginInfo,
-              firstName = Some(data.firstName),
-              lastName = Some(data.lastName),
-              fullName = Some(data.firstName + " " + data.lastName),
-              email = Some(data.email),
-              avatarURL = None,
-              activated = false
-            )
             for {
-              avatar <- avatarService.retrieveURL(data.email)
-              user <- userService.save(user.copy(avatarURL = avatar))
-              authInfo <- authInfoRepository.add(loginInfo, authInfo)
-              authToken <- authTokenService.create(user.userID)
+              jsonVal <- matchmakingController.addUser(s"${user.firstName.getOrElse("")} ${user.lastName.getOrElse("")}")
+              id <- Future((jsonVal \ "id").as[String])
             } yield {
-              val url = routes.ActivateAccountController.activate(authToken.id).absoluteURL()
-              mailerClient.send(Email(
-                subject = Messages("email.sign.up.subject"),
-                from = Messages("email.from"),
-                to = Seq(data.email),
-                bodyText = Some(views.txt.emails.signUp(user, url).body),
-                bodyHtml = Some(views.html.emails.signUp(user, url).body)
-              ))
-
-              eventBus.publish(SignUpEvent(user, request))
-              result
+              val user = User(
+                userID = UUID.randomUUID(),
+                loginInfo = loginInfo,
+                firstName = Some(data.firstName),
+                lastName = Some(data.lastName),
+                fullName = Some(data.firstName + " " + data.lastName),
+                email = Some(data.email),
+                avatarURL = None,
+                activated = false,
+                apiId = Some(id)
+              )
+              for {
+                avatar <- avatarService.retrieveURL(data.email)
+                user <- userService.save(user.copy(avatarURL = avatar))
+                authInfo <- authInfoRepository.add(loginInfo, authInfo)
+                authToken <- authTokenService.create(user.userID)
+              } yield {
+                val url = routes.ActivateAccountController.activate(authToken.id).absoluteURL()
+                eventBus.publish(SignUpEvent(user, request))
+                result
+              }
             }
         }
       }
