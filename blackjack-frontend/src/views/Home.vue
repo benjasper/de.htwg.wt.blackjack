@@ -18,11 +18,11 @@
 <script lang="ts">
 import {Component, Vue} from 'vue-property-decorator'
 import store from '@/store'
-import axios from "axios";
+import axios from 'axios'
 
 @Component({})
 export default class Home extends Vue {
-	public name = "Player"
+	public name = 'Player'
 	constructor() {
 		super()
 		const queryString = window.location.search
@@ -32,10 +32,10 @@ export default class Home extends Vue {
 		if (urlParams.get('userId') === '' || userId === null || store.getters.isLoggedIn) {
 			console.log('No login needed, because' + userId)
 			if (store.getters.isLoggedIn) {
-				axios.get('/user?player=' + playerId).then(response => {
+				axios.get('/user?player=' + userId).then(response => {
 					const data = response.data
 					if ('success' in data && data.success === false) {
-						this.error(data.msg)
+						console.error(data.msg)
 						return
 					}
 
