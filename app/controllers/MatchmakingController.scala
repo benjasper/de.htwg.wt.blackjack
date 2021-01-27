@@ -1,11 +1,10 @@
 package controllers
 
 import akka.actor.ActorSystem
-import play.api.libs.json.{JsValue, Json}
-import play.api.libs.ws.{WSClient, WSRequest}
-import utils.Observable
+import play.api.libs.json.{ JsValue, Json }
+import play.api.libs.ws.{ WSClient, WSRequest }
 
-import scala.concurrent.{ExecutionContextExecutor, Future}
+import scala.concurrent.{ ExecutionContextExecutor, Future }
 
 class MatchmakingController(ws: WSClient, gameHost: String) {
 
@@ -20,7 +19,7 @@ class MatchmakingController(ws: WSClient, gameHost: String) {
       "betValue" -> 100
     )
 
-    request.put(json).map{
+    request.put(json).map {
       response => response.json
     }
   }

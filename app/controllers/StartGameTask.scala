@@ -1,8 +1,8 @@
 package controllers
 
-import akka.actor.{ActorSystem, Cancellable}
+import akka.actor.{ ActorSystem, Cancellable }
 
-import scala.concurrent.{ExecutionContext, ExecutionContextExecutor}
+import scala.concurrent.ExecutionContextExecutor
 import scala.concurrent.duration._
 import scala.util.Random
 
