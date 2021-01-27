@@ -31,7 +31,7 @@
 			</v-col>
 		</v-row>
 		<v-row>
-			<v-col v-if="isLoggedIn" cols="12" class="m-auto text-center">
+			<v-col v-if="this.isLoggedIn" cols="12" class="m-auto text-center">
 				<v-btn @click="logout" role="button" color="error">Log out</v-btn>
 			</v-col>
 		</v-row>
@@ -46,15 +46,14 @@ import axios from 'axios'
 @Component({})
 export default class Home extends Vue {
 	public name = 'Player'
-	public isLoggedIn = false
+	public isLoggedIn = store.getters.isLoggedIn
+
 	constructor() {
 		super()
 		this.setupLogin()
 	}
 
 	setupLogin() {
-		this.isLoggedIn = store.getters.isLoggedIn
-
 		const queryString = window.location.search
 		const urlParams = new URLSearchParams(queryString)
 
