@@ -93,12 +93,15 @@ const store = new Vuex.Store({
 		},
 
 		logout({ commit }) {
+			localStorage.clear()
 			axios.get('/signOut', axiosConfig)
 				.then(() => {
 					router.push('/login')
 					commit('SET_LOGIN', false)
 				})
 				.catch(() => {
+					router.push('/login')
+					commit('SET_LOGIN', false)
 					console.log('Something went wrong')
 				})
 		},

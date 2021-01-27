@@ -16,7 +16,10 @@
 			<v-btn to="/login" role="button">Log in</v-btn>
 			<br>
 			<br>
-			<v-btn to="/game" role="button">Start Game</v-btn>
+			<v-btn to="/game" role="button" color="info">Start Game</v-btn>
+			<br>
+			<br>
+			<v-btn @click="logout" role="button" color="error">Log out</v-btn>
 		</div>
 	</div>
 </template>
@@ -54,6 +57,10 @@ export default class Home extends Vue {
 		console.log('Now logging in' + userId)
 		store.dispatch('setLoggedIn', urlParams.get('userId'))
 		location.reload()
+	}
+
+	public logout() {
+		store.dispatch('logout')
 	}
 }
 </script>

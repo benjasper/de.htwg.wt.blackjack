@@ -1,34 +1,86 @@
 <template>
-	<div class=center>
-		<h1>Login</h1>
-		<form id="loginform">
-			E-Mail-Adresse:
-			<br />
-			<input placeholder="max@mustermann.de" v-model="email" />
-			<br /><br />
-			Passwort:
-			<br />
-			<input type="password" v-model="password" />
-			<br /><br />
-			<button @click="login()">LOGIN</button>
-		</form>
-		<br>
-		<button @click="googleLogin()">LOGIN MIT GOOGLE</button>
-		<br><br>
-		Noch keinen Account? <br>
-		<button @click="gotoSignup()">REGISTRIEREN!</button>
-	</div>
+	<v-form>
+		<v-container>
+			<v-row>
+				<v-col cols="4"></v-col>
+				<v-col cols="4">
+					<v-row>
+						<h1 class="text-center m-auto">Login</h1>
+					</v-row>
+					<v-row>
+						<v-col
+							cols="12"
+							md="12"
+						>
+							<v-text-field
+								v-model="email"
+								label="E-mail"
+								required
+							></v-text-field>
+						</v-col>
+					</v-row>
+					<v-row>
+						<v-col
+							cols="12"
+							md="12"
+						>
+							<v-text-field
+								v-model="password"
+								type="password"
+								label="Password"
+								required
+							></v-text-field>
+						</v-col>
+					</v-row>
+					<v-row>
+						<v-col cols="4">
+							<v-btn
+								color="success"
+								@click="login"
+							>
+								Log in
+							</v-btn>
+						</v-col>
+						<v-col cols="4">
+							<v-btn
+								color="error"
+								@click="googleLogin"
+							>
+								Google Log in
+							</v-btn>
+						</v-col
+						>
+						<v-col cols="4">
+							<v-btn to="/signin">
+								Register here
+							</v-btn>
+						</v-col>
+					</v-row>
+					<v-row>
+						<v-col cols="12" class="m-auto text-center">
+							<v-btn to="/" >
+								Main menu
+							</v-btn>
+						</v-col>
+					</v-row>
+				</v-col>
+				<v-col cols="4"></v-col>
+			</v-row>
+		</v-container>
+	</v-form>
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator'
+import {Component, Vue} from 'vue-property-decorator'
 import store from '@/store'
+
 @Component({
 	name: 'Login'
 })
 export default class Login extends Vue {
-	email= ''
-	password= ''
+	email = ''
+	password = ''
+
 	// emailRules: [ (value) => !!value || "Required.", (v) => /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(v) || "E-mail must be valid" ]
 
 	login() {
@@ -40,10 +92,6 @@ export default class Login extends Vue {
 
 	googleLogin() {
 		location.replace('http://localhost:9000/authenticate/google')
-	}
-
-	gotoSignup() {
-		this.$router.push('signup')
 	}
 }
 
