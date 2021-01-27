@@ -30,7 +30,7 @@
 		</div>
 		<div class="container-fluid control-bar">
 			<v-row>
-				<v-col class="menu control-child">
+				<v-col class="menu control-child m-auto">
 					<v-row class="m-auto">
 						<v-btn class="ml-auto" :disabled="gameInProgress" to="/">Back</v-btn>
 						<v-dialog
@@ -92,6 +92,11 @@
 								   :disabled="!actionsEnabled">STAND
 							</v-btn>
 						</div>
+					</v-row>
+					<v-row class="m-auto text-center d-block mt-2">
+						<span v-if="actionsEnabled">Your turn</span>
+						<span v-if="!actionsEnabled && playerTurn">{{ playerTurn }}s turn</span>
+						<span v-if="!actionsEnabled && playerTurn === ''">-</span>
 					</v-row>
 				</v-col>
 				<v-col class="stats control-child">
@@ -219,6 +224,8 @@ export default class Game extends Vue {
 	public matchmakingDialog = false
 	public connected = false
 
+	public playerTurn = ''
+
 	disableProd = false
 
 	isProd = false
@@ -298,6 +305,7 @@ export default class Game extends Vue {
 	private matchmakingAction(response: any) {
 		this.matchmakingDialog = true
 		this.playerNumber = response.game.playerIndex
+		this.playerTurn = ''
 		if (response.game.playerIndex !== 0) {
 			response.game.players.forEach((id: string, index: number) => {
 				if (index === response.game.players.length - 1) {
@@ -328,6 +336,13 @@ export default class Game extends Vue {
 		this.matchmakingDialog = false
 		if (response.nextTurn === getLoggedInPlayer().id) {
 			this.actionsEnabled = true
+		}
+
+		if (response.nextTurn) {
+			const player = this.players.find(player => player.id === response.nextTurn)
+			if (player) {
+				this.playerTurn = player?.name
+			}
 		}
 
 		if (!isWatching) {
@@ -375,6 +390,13 @@ export default class Game extends Vue {
 			this.actionsEnabled = true
 		}
 
+		if (response.nextTurn) {
+			const player = this.players.find(player => player.id === response.nextTurn)
+			if (player) {
+				this.playerTurn = player?.name
+			}
+		}
+
 		if (response.game.gameStates[playerIndex][response.game.gameStates[playerIndex].length - 1].gameState === 'WAITING_FOR_INPUT') {
 			// TODO: Allow hit stand
 
@@ -386,6 +408,7 @@ export default class Game extends Vue {
 			this.revealDealerCards(response.game.dealerCards)
 			this.gameInProgress = false
 			this.dealerCardsValue = response.game.dealerCardsValue
+			this.playerTurn = ''
 
 			this.finishGame(response.game.gameStates[playerIndex])
 		}
@@ -409,11 +432,19 @@ export default class Game extends Vue {
 			return
 		}
 
+		if (response.nextTurn) {
+			const player = this.players.find(player => player.id === response.nextTurn)
+			if (player) {
+				this.playerTurn = player?.name
+			}
+		}
+
 		if (response.nextTurn === '') {
 			this.revealDealerCards(response.game.dealerCards)
 			this.gameInProgress = false
 			this.players[playerIndex].handValue = response.game.playerCardsValue
 			Vue.set(this.players, playerIndex, this.players[playerIndex])
+			this.playerTurn = ''
 
 			this.dealerCardsValue = response.game.dealerCardsValue
 			this.finishGame(response.game.gameStates[playerIndex])
