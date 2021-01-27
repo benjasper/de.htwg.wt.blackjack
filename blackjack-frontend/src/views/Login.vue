@@ -14,7 +14,6 @@
 		</form>
 		<br>
 		<button @click="googleLogin()">LOGIN MIT GOOGLE</button>
-		<br>
 		<br><br>
 		Noch keinen Account? <br>
 		<button @click="gotoSignup()">REGISTRIEREN!</button>
@@ -23,6 +22,7 @@
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator'
+@Component({
 	name: 'Login'
 })
 export default class Login extends Vue {
