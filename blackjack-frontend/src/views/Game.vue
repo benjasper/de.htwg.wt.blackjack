@@ -194,7 +194,7 @@ function getLoggedInPlayer(): Player {
 	if (localStorage.getItem('player') != null) {
 		return JSON.parse(localStorage.getItem('player') ?? '')
 	}
-	return new Player('5fa3ba4f800df34886c43d15', 'Benni')
+	return new Player('5fdb233f4e6244478a74b644', 'Benni')
 	// return new Player('', '')
 }
 
