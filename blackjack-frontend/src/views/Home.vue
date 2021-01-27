@@ -27,9 +27,11 @@ export default class Home extends Vue {
 		const urlParams = new URLSearchParams(queryString)
 
 		const userId = urlParams.get('userId')
-		if (urlParams.get('userId') === '' || userId === null || store.getters.isLoggedIn()) {
+		if (urlParams.get('userId') === '' || userId === null || store.getters.isLoggedIn) {
+			console.log('No login needed, because' + userId)
 			return
 		}
+		console.log('Now logging in' + userId)
 		store.dispatch('setLoggedIn', urlParams.get('userId'))
 	}
 }
